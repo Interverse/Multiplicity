@@ -1,6 +1,7 @@
-using System.Drawing;
+using System;
 using System.IO;
 using Multiplicity.Packets.Extensions;
+using System.Drawing;
 
 namespace Multiplicity.Packets
 {
@@ -16,7 +17,7 @@ namespace Multiplicity.Packets
 
         public Color Color { get; set; }
 
-        public string Text { get; set; }
+        public int HealAmount { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateCombatText"/> class.
@@ -37,19 +38,19 @@ namespace Multiplicity.Packets
             this.X = br.ReadSingle();
             this.Y = br.ReadSingle();
             this.Color = br.ReadColor();
-            this.Text = br.ReadString();
+            this.HealAmount = br.ReadInt32();
         }
 
         public override string ToString()
         {
-            return $"[CreateCombatText: X = {X} Y = {Y} Color = {Color} Text = {Text}]";
+            return $"[CreateCombatText: X = {X} Y = {Y} Color = {Color} HealAmount = {HealAmount}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(12 + Text.Length);
+            return (short)(15);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -57,7 +58,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -69,11 +71,12 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(X);
                 br.Write(Y);
                 br.Write(Color);
-                br.Write(Text);
+                br.Write(HealAmount);
             }
         }
 

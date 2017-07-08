@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -13,14 +14,17 @@ namespace Multiplicity.Packets
 
         public int Y { get; set; }
 
-        public short Type { get; set; }
+        public short NPCType { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Style - Sent to NPC AI[2]|
+        /// </summary>
         public byte Style { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReleaseNPC"/> class.
         /// </summary>
-        public ReleaseNPC() 
+        public ReleaseNPC()
             : base((byte)PacketTypes.ReleaseNPC)
         {
 
@@ -30,18 +34,18 @@ namespace Multiplicity.Packets
         /// Initializes a new instance of the <see cref="ReleaseNPC"/> class.
         /// </summary>
         /// <param name="br">br</param>
-        public ReleaseNPC(BinaryReader br) 
+        public ReleaseNPC(BinaryReader br)
             : base(br)
         {
             this.X = br.ReadInt32();
             this.Y = br.ReadInt32();
-            this.Type = br.ReadInt16();
+            this.NPCType = br.ReadInt16();
             this.Style = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[ReleaseNPC: X = {X} Y = {Y} Type = {Type} Style = {Style}]";
+            return $"[ReleaseNPC: X = {X} Y = {Y} NPCType = {NPCType} Style = {Style}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -56,7 +60,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -68,10 +73,11 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(X);
                 br.Write(Y);
-                br.Write(Type);
+                br.Write(NPCType);
                 br.Write(Style);
             }
         }

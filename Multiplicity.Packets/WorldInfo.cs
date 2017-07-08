@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -33,6 +34,10 @@ namespace Multiplicity.Packets
         public int WorldID { get; set; }
 
         public string WorldName { get; set; }
+
+        public byte[] WorldUniqueID { get; set; }
+
+        public ulong WorldGeneratorVersion { get; set; }
 
         public byte MoonType { get; set; }
 
@@ -102,13 +107,26 @@ namespace Multiplicity.Packets
         /// </summary>
         public byte EventInfo2 { get; set; }
 
+        /// <summary>
+        /// Gets or sets the EventInfo3 - BitFlags: 1 = Expert Mode, 2 = FastForwardTime, 3 = Slime Rain, 4 = Downed Slime King, 5 = Downed Queen Bee, 6 = Downed Fishron, 7 = Downed Martians, 8 = Downed Ancient Cultist|
+        /// </summary>
         public byte EventInfo3 { get; set; }
 
+        /// <summary>
+        /// Gets or sets the EventInfo4 - BitFlags: 1 = Downed Moon Lord, 2 = Downed Pumking, 3 = Downed Mourning Wood, 4 = Downed Ice Queen, 5 = Downed Santank, 6 = Downed Everscream, 7 = Downed Golem, 8 = Birthday Party|
+        /// </summary>
         public byte EventInfo4 { get; set; }
+
+        /// <summary>
+        /// Gets or sets the EventInfo5 - BitFlags: 1 = Downed Pirates, 2 = Downed Frost Legion, 3 = Downed Goblins, 4 = Sandstorm, 5 = DD2 Event, 6 = Downed DD2 Tier 1, 7 = Downed DD2 Tier 2, 8 = Downed DD2 Tier 3|
+        /// </summary>
+        public byte EventInfo5 { get; set; }
 
         public sbyte InvasionType { get; set; }
 
         public ulong LobbyID { get; set; }
+
+        public float SandstormSeverity { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WorldInfo"/> class.
@@ -137,6 +155,8 @@ namespace Multiplicity.Packets
             this.RockLayer = br.ReadInt16();
             this.WorldID = br.ReadInt32();
             this.WorldName = br.ReadString();
+            this.WorldUniqueID = br.ReadBytes(16);
+            this.WorldGeneratorVersion = br.ReadUInt64();
             this.MoonType = br.ReadByte();
             this.TreeBackground = br.ReadByte();
             this.CorruptionBackground = br.ReadByte();
@@ -170,21 +190,22 @@ namespace Multiplicity.Packets
             this.EventInfo2 = br.ReadByte();
             this.EventInfo3 = br.ReadByte();
             this.EventInfo4 = br.ReadByte();
+            this.EventInfo5 = br.ReadByte();
             this.InvasionType = br.ReadSByte();
             this.LobbyID = br.ReadUInt64();
+            this.SandstormSeverity = br.ReadSingle();
         }
 
         public override string ToString()
         {
-            return
-	            $"[WorldInfo: Time = {Time} DayandMoonInfo = {DayandMoonInfo} MoonPhase = {MoonPhase} MaxTilesX = {MaxTilesX} MaxTilesY = {MaxTilesY} SpawnX = {SpawnX} SpawnY = {SpawnY} WorldSurface = {WorldSurface} RockLayer = {RockLayer} WorldID = {WorldID} WorldName = {WorldName} MoonType = {MoonType} TreeBackground = {TreeBackground} CorruptionBackground = {CorruptionBackground} JungleBackground = {JungleBackground} SnowBackground = {SnowBackground} HallowBackground = {HallowBackground} CrimsonBackground = {CrimsonBackground} DesertBackground = {DesertBackground} OceanBackground = {OceanBackground} IceBackStyle = {IceBackStyle} JungleBackStyle = {JungleBackStyle} HellBackStyle = {HellBackStyle} WindSpeedSet = {WindSpeedSet} CloudNumber = {CloudNumber} Tree1 = {Tree1} Tree2 = {Tree2} Tree3 = {Tree3} TreeStyle1 = {TreeStyle1} TreeStyle2 = {TreeStyle2} TreeStyle3 = {TreeStyle3} TreeStyle4 = {TreeStyle4} CaveBack1 = {CaveBack1} CaveBack2 = {CaveBack2} CaveBack3 = {CaveBack3} CaveBackStyle1 = {CaveBackStyle1} CaveBackStyle2 = {CaveBackStyle2} CaveBackStyle3 = {CaveBackStyle3} CaveBackStyle4 = {CaveBackStyle4} Rain = {Rain} EventInfo = {EventInfo} EventInfo2 = {EventInfo2} EventInfo3 = {EventInfo3} EventInfo4 = {EventInfo4} InvasionType = {InvasionType} LobbyID = {LobbyID}]";
+            return $"[WorldInfo: Time = {Time} DayandMoonInfo = {DayandMoonInfo} MoonPhase = {MoonPhase} MaxTilesX = {MaxTilesX} MaxTilesY = {MaxTilesY} SpawnX = {SpawnX} SpawnY = {SpawnY} WorldSurface = {WorldSurface} RockLayer = {RockLayer} WorldID = {WorldID} WorldName = {WorldName} WorldUniqueID = {WorldUniqueID} WorldGeneratorVersion = {WorldGeneratorVersion} MoonType = {MoonType} TreeBackground = {TreeBackground} CorruptionBackground = {CorruptionBackground} JungleBackground = {JungleBackground} SnowBackground = {SnowBackground} HallowBackground = {HallowBackground} CrimsonBackground = {CrimsonBackground} DesertBackground = {DesertBackground} OceanBackground = {OceanBackground} IceBackStyle = {IceBackStyle} JungleBackStyle = {JungleBackStyle} HellBackStyle = {HellBackStyle} WindSpeedSet = {WindSpeedSet} CloudNumber = {CloudNumber} Tree1 = {Tree1} Tree2 = {Tree2} Tree3 = {Tree3} TreeStyle1 = {TreeStyle1} TreeStyle2 = {TreeStyle2} TreeStyle3 = {TreeStyle3} TreeStyle4 = {TreeStyle4} CaveBack1 = {CaveBack1} CaveBack2 = {CaveBack2} CaveBack3 = {CaveBack3} CaveBackStyle1 = {CaveBackStyle1} CaveBackStyle2 = {CaveBackStyle2} CaveBackStyle3 = {CaveBackStyle3} CaveBackStyle4 = {CaveBackStyle4} Rain = {Rain} EventInfo = {EventInfo} EventInfo2 = {EventInfo2} EventInfo3 = {EventInfo3} EventInfo4 = {EventInfo4} EventInfo5 = {EventInfo5} InvasionType = {InvasionType} LobbyID = {LobbyID}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(89 + WorldName.Length);
+            return (short)(118 + WorldName.Length);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -192,7 +213,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -204,7 +226,8 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(Time);
                 br.Write(DayandMoonInfo);
                 br.Write(MoonPhase);
@@ -216,6 +239,8 @@ namespace Multiplicity.Packets
                 br.Write(RockLayer);
                 br.Write(WorldID);
                 br.Write(WorldName);
+                br.Write(WorldUniqueID);
+                br.Write(WorldGeneratorVersion);
                 br.Write(MoonType);
                 br.Write(TreeBackground);
                 br.Write(CorruptionBackground);
@@ -249,8 +274,10 @@ namespace Multiplicity.Packets
                 br.Write(EventInfo2);
                 br.Write(EventInfo3);
                 br.Write(EventInfo4);
+                br.Write(EventInfo5);
                 br.Write(InvasionType);
                 br.Write(LobbyID);
+                br.Write(SandstormSeverity);
             }
         }
 

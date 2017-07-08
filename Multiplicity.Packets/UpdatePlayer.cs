@@ -1,86 +1,121 @@
-﻿using System;
+using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
-	[Flags]
-	public enum PlayerControlFlags : byte
-	{
-		None = 0,
-		Up = 1,
-		Down = 1 << 1,
-		Left = 1 << 2,
-		Right = 1 << 3,
-		Jump = 1 << 4,
-		UseItem = 1 << 5,
-		Direction = 1 << 6
-	}
+    /// <summary>
+    /// The UpdatePlayer (0xD) packet.
+    /// </summary>
+    public class UpdatePlayer : TerrariaPacket
+    {
 
-	[Flags]
-	public enum PulleyDirectionFlags : byte
-	{
-		None = 0,
-		Direction1 = 1,
-		Direction2 = 1 << 1
-	}
+        public byte PlayerID { get; set; }
 
-	public class UpdatePlayer : TerrariaPacket
-	{
-		public byte PlayerID { get; protected set; }
-		public PlayerControlFlags Control { get; set; }
-		public byte SelectedItem { get; set; }
-		public float PositionX { get; set; }
-		public float PositionY { get; set; }
-		public float VelocityX { get; set; }
-		public float VelocityY { get; set; }
-		public PulleyDirectionFlags Pulley { get; set; }
+        /// <summary>
+        /// Gets or sets the Control - BitFlags: ControlUp = 1, ControlDown = 2, ControlLeft = 4, ControlRight = 8, ControlJump = 16, ControlUseItem = 32, Direction = 64|
+        /// </summary>
+        public byte Control { get; set; }
 
-		public UpdatePlayer()
-			: base((byte)PacketTypes.UpdatePlayer)
-		{
+        /// <summary>
+        /// Gets or sets the Pulley - BitFlags: 0 = None, 1 = Direction, 2 = Direction, 4 = Update Velocity, 8 = Vortex Stealth Active, 16 = Gravity Direction, 32 = Shield Raised|
+        /// </summary>
+        public byte Pulley { get; set; }
 
-		}
+        public byte SelectedItem { get; set; }
 
-		public UpdatePlayer(BinaryReader br)
-			: base(br)
-		{
-			PlayerID = br.ReadByte();
-			Control = (PlayerControlFlags)br.ReadByte();
-			SelectedItem = br.ReadByte();
-			PositionX = br.ReadSingle();
-			PositionY = br.ReadSingle();
-			VelocityX = br.ReadSingle();
-			VelocityY = br.ReadSingle();
-			Pulley = (PulleyDirectionFlags)br.ReadByte();
-		}
+        public float PositionX { get; set; }
 
-		public override short GetLength()
-		{
-			return 20;
-		}
+        public float PositionY { get; set; }
 
-		public override void ToStream(Stream stream, bool includeHeader = true)
-		{
-			base.ToStream(stream, includeHeader);
+        /// <summary>
+        /// Gets or sets the VelocityX - Not sent if Update Velocity is not set|
+        /// </summary>
+        public float VelocityX { get; set; }
 
-			using (BinaryWriter bw = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))
-			{
-				bw.Write(PlayerID);
-				bw.Write((byte)Control);
-				bw.Write(SelectedItem);
-				bw.Write(PositionX);
-				bw.Write(PositionY);
-				bw.Write(VelocityX);
-				bw.Write(VelocityY);
-				bw.Write((byte)Pulley);
-			}
-		}
+        /// <summary>
+        /// Gets or sets the VelocityY - Not sent if Update Velocity is not set|
+        /// </summary>
+        public float VelocityY { get; set; }
 
-		public override string ToString()
-		{
-			return
-				$"[UpdatePlayer: PlayerID={PlayerID}, Control={Control}, SelectedItem={SelectedItem}, PositionX={PositionX}, PositionY={PositionY}, VelocityX={VelocityX}, VelocityY={VelocityY}, Pulley={Pulley}]";
-		}
-	}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdatePlayer"/> class.
+        /// </summary>
+        public UpdatePlayer()
+            : base((byte)PacketTypes.UpdatePlayer)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdatePlayer"/> class.
+        /// </summary>
+        /// <param name="br">br</param>
+        public UpdatePlayer(BinaryReader br)
+            : base(br)
+        {
+            this.PlayerID = br.ReadByte();
+            this.Control = br.ReadByte();
+            this.Pulley = br.ReadByte();
+            this.SelectedItem = br.ReadByte();
+            this.PositionX = br.ReadSingle();
+            this.PositionY = br.ReadSingle();
+
+            if (this.Pulley.ReadBit(2))
+            {
+                this.VelocityX = br.ReadSingle();
+                this.VelocityY = br.ReadSingle();
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"[UpdatePlayer: PlayerID = {PlayerID} Control = {Control} Pulley = {Pulley} SelectedItem = {SelectedItem} PositionX = {PositionX} PositionY = {PositionY} VelocityX = {VelocityX} VelocityY = {VelocityY}]";
+        }
+
+        #region implemented abstract members of TerrariaPacket
+
+        public override short GetLength()
+        {
+            return (short)(20);
+        }
+
+        public override void ToStream(Stream stream, bool includeHeader = true)
+        {
+            /*
+             * Length and ID headers get written in the base packet class.
+             */
+            if (includeHeader)
+            {
+                base.ToStream(stream, includeHeader);
+            }
+
+            /*
+             * Always make sure to not close the stream when serializing.
+             * 
+             * It is up to the caller to decide if the underlying stream
+             * gets closed.  If this is a network stream we do not want
+             * the regressions of unconditionally closing the TCP socket
+             * once the payload of data has been sent to the client.
+             */
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
+                br.Write(PlayerID);
+                br.Write(Control);
+                br.Write(Pulley);
+                br.Write(SelectedItem);
+                br.Write(PositionX);
+                br.Write(PositionY);
+
+                if (this.Pulley.ReadBit(2))
+                {
+                    br.Write(VelocityX);
+                    br.Write(VelocityY);
+                }
+            }
+        }
+
+        #endregion
+
+    }
 }
-

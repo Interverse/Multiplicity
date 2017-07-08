@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -9,11 +10,20 @@ namespace Multiplicity.Packets
     public class SendTileSquare : TerrariaPacket
     {
 
+        public ushort PlayerID { get; set; }
+
+        /// <summary>
+        /// Gets or sets the TileChangeType - Only if != 0|
+        /// </summary>
+        public byte TileChangeType { get; set; }
+
         public short Size { get; set; }
 
         public short TileX { get; set; }
 
         public short TileY { get; set; }
+
+        public byte[] TilePayload { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SendTileSquare"/> class.
@@ -31,21 +41,31 @@ namespace Multiplicity.Packets
         public SendTileSquare(BinaryReader br)
             : base(br)
         {
+            this.PlayerID = br.ReadUInt16();
+
+            int num24 = 32768;
+            int num25 = (uint)(this.PlayerID & num24) > 0U ? 1 : 0;
+
+            if (num25 != 0)
+                this.TileChangeType = br.ReadByte();
+
             this.Size = br.ReadInt16();
             this.TileX = br.ReadInt16();
             this.TileY = br.ReadInt16();
+
+            this.TilePayload = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
         }
 
         public override string ToString()
         {
-            return $"[SendTileSquare: Size = {Size} TileX = {TileX} TileY = {TileY}]";
+            return $"[SendTileSquare: PlayerID = {PlayerID} TileChangeType = {TileChangeType} Size = {Size} TileX = {TileX} TileY = {TileY} TileData: {TilePayload.Length / 1024:0.###} kB]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(6);
+            return (short)(9 + TilePayload.Length);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -53,7 +73,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -65,10 +86,20 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
+                br.Write(PlayerID);
+
+                int num24 = 32768;
+                int num25 = (uint)(this.PlayerID & num24) > 0U ? 1 : 0;
+
+                if (num25 != 0)
+                    br.Write(TileChangeType);
+                
                 br.Write(Size);
                 br.Write(TileX);
                 br.Write(TileY);
+                br.Write(TilePayload);
             }
         }
 

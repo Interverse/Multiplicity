@@ -9,16 +9,6 @@ namespace Multiplicity.Packets
     public class SendSection : TerrariaPacket
     {
 
-        public bool Compressed { get; set; }
-
-        public int XStart { get; set; }
-
-        public int YStart { get; set; }
-
-        public short Width { get; set; }
-
-        public short Height { get; set; }
-
         public byte[] TilePayload { get; set; }
 
         /// <summary>
@@ -68,10 +58,7 @@ namespace Multiplicity.Packets
             }
             */
 
-            this.XStart = br.ReadInt32();
-            this.YStart = br.ReadInt32();
-            this.Width = br.ReadInt16();
-            this.Height = br.ReadInt16();
+            // I hate myself for this, but there's no easy way to check if compressed and read the packet
 
             this.TilePayload = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
         }
@@ -79,14 +66,14 @@ namespace Multiplicity.Packets
         public override string ToString()
         {
             return
-	            $"[SendSection Compressed: {Compressed}, X: {XStart}, Y: {YStart}, Width: {Width}, Height: {Height} TileData: {TilePayload.Length/1024:0.###} kB]";
+	            $"[SendSection Compressed: TileData: {TilePayload.Length/1024:0.###} kB]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short) (13 + TilePayload.Length);
+            return (short) (TilePayload.Length);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -108,11 +95,6 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter bw = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))
             {
-                bw.Write(Compressed);
-                bw.Write(XStart);
-                bw.Write(YStart);
-                bw.Write(Width);
-                bw.Write(Height);
                 bw.Write(TilePayload);
             }
         }

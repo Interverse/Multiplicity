@@ -1,12 +1,15 @@
-﻿using System.IO;
+using System;
+using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The CrystalInvasionWipeAll (72) packet.
+    /// The CrystalInvasionWipeAll (0x72) packet.
     /// </summary>
     public class CrystalInvasionWipeAll : TerrariaPacket
     {
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CrystalInvasionWipeAll"/> class.
         /// </summary>
@@ -23,12 +26,11 @@ namespace Multiplicity.Packets
         public CrystalInvasionWipeAll(BinaryReader br)
             : base(br)
         {
-
         }
 
         public override string ToString()
         {
-            return $"[CrystalInvaionWipeAll]";
+            return $"[CrystalInvasionWipeAll:]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -62,5 +64,6 @@ namespace Multiplicity.Packets
         }
 
         #endregion
+
     }
 }

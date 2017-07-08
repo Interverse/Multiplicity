@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Multiplicity.Packets.Models;
 
 namespace Multiplicity.Packets.Extensions
 {
@@ -14,6 +15,11 @@ namespace Multiplicity.Packets.Extensions
 
 			bw.Write(rgb, 0, 3);
 		}
+
+        public static void Write(this BinaryWriter bw, NetworkText text)
+        {
+            text.ToStream(bw);
+        }
 	}
 }
 

@@ -1,12 +1,15 @@
-﻿using System.IO;
+using System;
+using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The CrystalInvasionStart (71) packet.
+    /// The CrystalInvasionStart (0x71) packet.
     /// </summary>
     public class CrystalInvasionStart : TerrariaPacket
     {
+
         public short X { get; set; }
 
         public short Y { get; set; }
@@ -27,8 +30,8 @@ namespace Multiplicity.Packets
         public CrystalInvasionStart(BinaryReader br)
             : base(br)
         {
-            X = br.ReadInt16();
-            Y = br.ReadInt16();
+            this.X = br.ReadInt16();
+            this.Y = br.ReadInt16();
         }
 
         public override string ToString()
@@ -69,5 +72,6 @@ namespace Multiplicity.Packets
         }
 
         #endregion
+
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -12,7 +13,7 @@ namespace Multiplicity.Packets
         public short NPCID { get; set; }
 
         /// <summary>
-        /// Gets or sets the Name - Read-only from the client|
+        /// Gets or sets the Name - Only if client is receiving packet|
         /// </summary>
         public string Name { get; set; }
 
@@ -33,7 +34,10 @@ namespace Multiplicity.Packets
             : base(br)
         {
             this.NPCID = br.ReadInt16();
-            this.Name = br.ReadString();
+
+            if (br.BaseStream.Length > br.BaseStream.Position) {
+                this.Name = br.ReadString();
+            }
         }
 
         public override string ToString()
@@ -45,7 +49,12 @@ namespace Multiplicity.Packets
 
         public override short GetLength()
         {
-            return (short)(3 + Name.Length);
+            int length = 2;
+
+            if (!string.IsNullOrEmpty(Name)) {
+                length += 1 + Name.Length;
+            }
+            return (short)length;
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -53,7 +62,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -65,9 +75,13 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(NPCID);
-                br.Write(Name);
+                if (!string.IsNullOrEmpty(Name))
+                {
+                    br.Write(Name);
+                }
             }
         }
 

@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
+using Multiplicity.Packets.Models;
 
 namespace Multiplicity.Packets
 {
@@ -14,7 +16,7 @@ namespace Multiplicity.Packets
         /// </summary>
         public int StatusMax { get; set; }
 
-        public string StatusText { get; set; }
+        public NetworkText StatusText { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Status"/> class.
@@ -33,19 +35,19 @@ namespace Multiplicity.Packets
             : base(br)
         {
             this.StatusMax = br.ReadInt32();
-            this.StatusText = br.ReadString();
+            this.StatusText = br.ReadNetworkText();
         }
 
         public override string ToString()
         {
-            return $"[Status: StatusMax = {StatusMax} StatusText = {StatusText}]";
+            return $"[Status: StatusMax = {StatusMax} StatusText = {StatusText.Text}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(5 + StatusText.Length);
+            return (short)(4 + StatusText.GetLength());
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -53,7 +55,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -65,7 +68,8 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(StatusMax);
                 br.Write(StatusText);
             }

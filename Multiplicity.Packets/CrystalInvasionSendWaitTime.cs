@@ -1,29 +1,42 @@
-﻿using System.IO;
+using System;
+using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The CrystalInvasionSendWaitTime (74) packet.
+    /// The CrystalInvasionSendWaitTime (0x74) packet.
     /// </summary>
     public class CrystalInvasionSendWaitTime : TerrariaPacket
     {
-        public int NextWaveTime { get; set; }
 
+        /// <summary>
+        /// Gets or sets the TimeUntilNextWave - 1800 (30s) between waves, 30 (5s) when starting|
+        /// </summary>
+        public int TimeUntilNextWave { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CrystalInvasionSendWaitTime"/> class.
+        /// </summary>
         public CrystalInvasionSendWaitTime()
             : base((byte)PacketTypes.CrystalInvasionSendWaitTime)
         {
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CrystalInvasionSendWaitTime"/> class.
+        /// </summary>
+        /// <param name="br">br</param>
         public CrystalInvasionSendWaitTime(BinaryReader br)
             : base(br)
         {
-            NextWaveTime = br.ReadInt32();
+            this.TimeUntilNextWave = br.ReadInt32();
         }
 
         public override string ToString()
         {
-            return $"[CrystalInvasionSendWaitTime: NextWaveTime = {NextWaveTime}]";
+            return $"[CrystalInvasionSendWaitTime: TimeUntilNextWave = {TimeUntilNextWave}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -53,10 +66,11 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
-                br.Write(NextWaveTime);
+                br.Write(TimeUntilNextWave);
             }
         }
 
         #endregion
+
     }
 }

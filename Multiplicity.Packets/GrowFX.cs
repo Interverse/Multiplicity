@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -16,6 +17,8 @@ namespace Multiplicity.Packets
         public short Y { get; set; }
 
         public byte Height { get; set; }
+
+        public short TreeGore { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GrowFX"/> class.
@@ -37,18 +40,19 @@ namespace Multiplicity.Packets
             this.X = br.ReadInt16();
             this.Y = br.ReadInt16();
             this.Height = br.ReadByte();
+            this.TreeGore = br.ReadInt16();
         }
 
         public override string ToString()
         {
-            return $"[GrowFX: GrowEffect = {GrowEffect} X = {X} Y = {Y} Height = {Height}]";
+            return $"[GrowFX: GrowEffect = {GrowEffect} X = {X} Y = {Y} Height = {Height} TreeGore = {TreeGore}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(6);
+            return (short)(8);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -56,7 +60,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -68,11 +73,13 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(GrowEffect);
                 br.Write(X);
                 br.Write(Y);
                 br.Write(Height);
+                br.Write(TreeGore);
             }
         }
 

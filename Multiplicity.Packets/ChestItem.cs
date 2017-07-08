@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -44,8 +45,7 @@ namespace Multiplicity.Packets
 
         public override string ToString()
         {
-            return
-	            $"[ChestItem: ChestID = {ChestID} ItemSlot = {ItemSlot} Stack = {Stack} Prefix = {Prefix} ItemNetID = {ItemNetID}]";
+            return $"[ChestItem: ChestID = {ChestID} ItemSlot = {ItemSlot} Stack = {Stack} Prefix = {Prefix} ItemNetID = {ItemNetID}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -60,7 +60,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -72,7 +73,8 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(ChestID);
                 br.Write(ItemSlot);
                 br.Write(Stack);

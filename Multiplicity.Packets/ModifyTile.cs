@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -10,9 +11,7 @@ namespace Multiplicity.Packets
     {
 
         /// <summary>
-        /// Gets or sets the Action - 0 = Kill Tile, 1 = Place Tile, 2 = Kill Wall, 3 = Place Wall, 4 = Kill Tile No Item, 5 = Place Wire
-        /// 6 = Kill Wire, 7 = Pound Tile, 8 = Place Actuator, 9 = Kill Actuator, 10 = Place Wire2, 11 = Kill Wire2, 12 = Place Wire3, 13 = Kill Wire3
-        /// 14 = Slope Tile, 15 = Frame Track, 16 = Place Wire4, 17 = Kill Wire4, 18 = Poke Logic Gate, 19 = Actuate
+        /// Gets or sets the Action - Values: 0 = KillTile, 1 = PlaceTile, 2 = KillWall, 3 = PlaceWall, 4 = KillTileNoItem, 5 = PlaceWire, 6 = KillWire, 7 = PoundTile, 8 = PlaceActuator, 9 = KillActuator, 10 = PlaceWire2, 11 = KillWire2, 12 = PlaceWire3, 13 = KillWire3, 14 = SlopeTile, 15 = FrameTrack, 16 = PlaceWire4, 17 = KillWire4, 18 = PokeLogicGate, 19 = Actuate|
         /// </summary>
         public byte Action { get; set; }
 
@@ -20,15 +19,21 @@ namespace Multiplicity.Packets
 
         public short TileY { get; set; }
 
-        public short EditData { get; set; }
+        /// <summary>
+        /// Gets or sets the Var1 - KillTile (Fail: Bool), PlaceTile (Type: Byte), KillWall (Fail: Bool), PlaceWall (Type: Byte), KillTileNoItem (Fail: Bool), SlopeTile (Slope: Byte)|
+        /// </summary>
+        public short Var1 { get; set; }
 
-        public byte Style { get; set; }
+        /// <summary>
+        /// Gets or sets the Var2 - Var2: PlaceTile (Style: Byte)|
+        /// </summary>
+        public byte Var2 { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModifyTile"/> class.
         /// </summary>
-        public ModifyTile() 
-			: base((byte)PacketTypes.ModifyTile)
+        public ModifyTile()
+            : base((byte)PacketTypes.ModifyTile)
         {
 
         }
@@ -37,19 +42,19 @@ namespace Multiplicity.Packets
         /// Initializes a new instance of the <see cref="ModifyTile"/> class.
         /// </summary>
         /// <param name="br">br</param>
-        public ModifyTile(BinaryReader br) 
+        public ModifyTile(BinaryReader br)
             : base(br)
         {
             this.Action = br.ReadByte();
             this.TileX = br.ReadInt16();
             this.TileY = br.ReadInt16();
-            this.EditData = br.ReadInt16();
-            this.Style = br.ReadByte();
+            this.Var1 = br.ReadInt16();
+            this.Var2 = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[ModifyTile: Action = {Action} TileX = {TileX} TileY = {TileY} EditData = {EditData} Style = {Style}]";
+            return $"[ModifyTile: Action = {Action} TileX = {TileX} TileY = {TileY} Var1 = {Var1} Var2 = {Var2}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -64,7 +69,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -76,12 +82,13 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(Action);
                 br.Write(TileX);
                 br.Write(TileY);
-                br.Write(EditData);
-                br.Write(Style);
+                br.Write(Var1);
+                br.Write(Var2);
             }
         }
 

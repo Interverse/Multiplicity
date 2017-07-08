@@ -7,6 +7,7 @@
 //  Copyright (c) 2016 Celant
 
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -54,25 +55,76 @@ namespace Multiplicity.Packets
         {
             this.ItemIndex = br.ReadInt16();
             this.Flags1 = br.ReadByte();
-            this.PackedColorValue = br.ReadUInt32();
-            this.Damage = br.ReadUInt16();
-            this.Knockback = br.ReadSingle();
-            this.UseAnimation = br.ReadUInt16();
-            this.UseTime = br.ReadUInt16();
-            this.Shoot = br.ReadInt16();
-            this.ShootSpeed = br.ReadSingle();
-            this.Flags2 = br.ReadByte();
-            this.Width = br.ReadInt16();
-            this.Height = br.ReadInt16();
-            this.Scale = br.ReadSingle();
-            this.Ammo = br.ReadInt16();
-            this.UseAmmo = br.ReadInt16();
-            this.NotAmmo = br.ReadBoolean();
+            if (this.Flags1.ReadBit(0))
+                this.PackedColorValue = br.ReadUInt32();
+            if (this.Flags1.ReadBit(1))
+                this.Damage = br.ReadUInt16();
+            if (this.Flags1.ReadBit(2))
+                this.Knockback = br.ReadSingle();
+            if (this.Flags1.ReadBit(3)) 
+                this.UseAnimation = br.ReadUInt16();
+            if (this.Flags1.ReadBit(4)) 
+                this.UseTime = br.ReadUInt16();
+            if (this.Flags1.ReadBit(5)) 
+                this.Shoot = br.ReadInt16();
+            if (this.Flags1.ReadBit(6)) 
+                this.ShootSpeed = br.ReadSingle();
+
+            if (this.Flags1.ReadBit(7))
+            {
+                this.Flags2 = br.ReadByte();
+                if (this.Flags1.ReadBit(0))
+                    this.Width = br.ReadInt16();
+                if (this.Flags1.ReadBit(1))
+                    this.Height = br.ReadInt16();
+                if (this.Flags1.ReadBit(2))
+                    this.Scale = br.ReadSingle();
+                if (this.Flags1.ReadBit(3))
+                    this.Ammo = br.ReadInt16();
+                if (this.Flags1.ReadBit(4))
+                    this.UseAmmo = br.ReadInt16();
+                if (this.Flags1.ReadBit(5))
+                    this.NotAmmo = br.ReadBoolean();
+            }
         }
 
         public override short GetLength()
         {
-            return 37;
+            short length = 3;
+
+            if (this.Flags1.ReadBit(0))
+                length += 4;
+            if (this.Flags1.ReadBit(1))
+                length += 2;
+            if (this.Flags1.ReadBit(2))
+                length += 4;
+            if (this.Flags1.ReadBit(3))
+                length += 2;
+            if (this.Flags1.ReadBit(4))
+                length += 2;
+            if (this.Flags1.ReadBit(5))
+                length += 2;
+            if (this.Flags1.ReadBit(6))
+                length += 4;
+
+            if (this.Flags1.ReadBit(7))
+            {
+                length += 1;
+                if (this.Flags1.ReadBit(0))
+                    length += 2;
+                if (this.Flags1.ReadBit(1))
+                    length += 2;
+                if (this.Flags1.ReadBit(2))
+                    length += 4;
+                if (this.Flags1.ReadBit(3))
+                    length += 2;
+                if (this.Flags1.ReadBit(4))
+                    length += 2;
+                if (this.Flags1.ReadBit(5))
+                    length += 1;
+            }
+
+            return length;
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -83,20 +135,37 @@ namespace Multiplicity.Packets
             {
                 bw.Write(ItemIndex);
                 bw.Write(Flags1);
-                bw.Write(PackedColorValue);
-                bw.Write(Damage);
-                bw.Write(Knockback);
-                bw.Write(UseAnimation);
-                bw.Write(UseTime);
-                bw.Write(Shoot);
-                bw.Write(ShootSpeed);
-                bw.Write(Flags2);
-                bw.Write(Width);
-                bw.Write(Height);
-                bw.Write(Scale);
-                bw.Write(Ammo);
-                bw.Write(UseAmmo);
-                bw.Write(NotAmmo);
+                if (Flags1.ReadBit(1))
+                    bw.Write(PackedColorValue);
+                if (this.Flags1.ReadBit(2))
+                    bw.Write(Damage);
+                if (this.Flags1.ReadBit(4))
+                    bw.Write(Knockback);
+                if (this.Flags1.ReadBit(8))
+                    bw.Write(UseAnimation);
+                if (this.Flags1.ReadBit(16))
+                    bw.Write(UseTime);
+                if (this.Flags1.ReadBit(32))
+                    bw.Write(Shoot);
+                if (this.Flags1.ReadBit(64))
+                    bw.Write(ShootSpeed);
+
+                if (this.Flags1.ReadBit(128))
+                {
+                    bw.Write(Flags2);
+                    if (this.Flags1.ReadBit(1))
+                        bw.Write(Width);
+                    if (this.Flags1.ReadBit(1))
+                        bw.Write(Height);
+                    if (this.Flags1.ReadBit(1))
+                        bw.Write(Scale);
+                    if (this.Flags1.ReadBit(1))
+                        bw.Write(Ammo);
+                    if (this.Flags1.ReadBit(1))
+                        bw.Write(UseAmmo);
+                    if (this.Flags1.ReadBit(1))
+                        bw.Write(NotAmmo);
+                }
             }
         }
 

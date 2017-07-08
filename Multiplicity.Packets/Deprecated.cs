@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -12,7 +13,7 @@ namespace Multiplicity.Packets
         /// <summary>
         /// Initializes a new instance of the <see cref="Deprecated"/> class.
         /// </summary>
-        public Deprecated() 
+        public Deprecated()
             : base((byte)PacketTypes.Deprecated)
         {
 
@@ -22,15 +23,14 @@ namespace Multiplicity.Packets
         /// Initializes a new instance of the <see cref="Deprecated"/> class.
         /// </summary>
         /// <param name="br">br</param>
-        public Deprecated(BinaryReader br) 
+        public Deprecated(BinaryReader br)
             : base(br)
         {
-
         }
 
         public override string ToString()
         {
-            return string.Format("[Deprecated]");
+            return $"[Deprecated:]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -45,7 +45,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -57,7 +58,8 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
             }
         }
 

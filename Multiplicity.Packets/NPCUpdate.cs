@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -19,9 +20,6 @@ namespace Multiplicity.Packets
 
     public class NPCUpdate : TerrariaPacket
     {
-        protected short _npcLifeBytes = 1;
-        protected bool _releaseOwner = false;
-
         public short NPCID { get; protected set; }
 
         public float PositionX { get; set; }
@@ -32,23 +30,16 @@ namespace Multiplicity.Packets
 
         public float VelocityY { get; set; }
 
-        public byte Target { get; set; }
+        public ushort Target { get; set; }
 
-        public NPCUpdateFlags Flags { get; set; }
+        public byte Flags { get; set; }
 
-        public int? Life { get; set; }
-
-        public float[] AI { get; set; }
-
-        public short NPCNetID { get; set; }
-
-        public byte ReleaseOwner { get; set; }
+        public byte[] Remainder { get; set; }
 
         public NPCUpdate()
             : base((byte)PacketTypes.NPCUpdate)
         {
             this.NPCID = NPCID;
-            this.AI = new float[4];
         }
 
         public NPCUpdate(BinaryReader br)
@@ -59,90 +50,36 @@ namespace Multiplicity.Packets
             this.PositionY = br.ReadSingle();
             this.VelocityX = br.ReadSingle();
             this.VelocityY = br.ReadSingle();
-            this.Target = br.ReadByte();
-            this.Flags = (NPCUpdateFlags)br.ReadByte();
+            this.Target = br.ReadUInt16();
+            this.Flags = br.ReadByte();
 
-            this.AI = new float[4];
-
-            for (int i = 0; i < 4; i++)
-            {
-                float ai = 0;
-
-                if (((byte)Flags & (1 << (i + 2))) != 0)
-                {
-                    ai = br.ReadSingle();
-                }
-
-                AI[i] = ai;
-            }
-
-            this.NPCNetID = br.ReadInt16();
-
-            if ((Flags & NPCUpdateFlags.FullLife) == NPCUpdateFlags.None)
-            {
-                /*
-                 * This is a fucking filthy hack, have to take stream length
-                 * as a way to work out how much packet buffer we have left
-                 * because the Terraria process has a runtime dictionary of NPC
-                 * life bytes which tells the packet processor how many bytes of
-                 * the NPC life there is in the packet.
-                 * 
-                 * We don't have access to this information short of blurting
-                 * up our on dictionary of NPC life bytes in which I would rather
-                 * kill myself than do.
-                 */
-                long bufferLeft = br.BaseStream.Length - br.BaseStream.Position;
-
-                if (bufferLeft >= 4)
-                {
-                    this.Life = (int)br.ReadInt32();
-                    _npcLifeBytes = 4;
-                }
-                else if (bufferLeft >= 2)
-                {
-                    this.Life = (int)br.ReadInt16();
-                    _npcLifeBytes = 2;
-                }
-                else
-                {
-                    this.Life = (int)br.ReadSByte();
-                    _npcLifeBytes = 1;
-                }
-            }
+            /*
+			 * This is a fucking filthy hack, have to take stream length
+			 * as a way to work out how much packet buffer we have left
+			 * because the Terraria process has a runtime dictionary of NPC
+			 * life bytes which tells the packet processor how many bytes of
+			 * the NPC life there is in the packet.
+			 * 
+			 * We don't have access to this information short of blurting
+			 * up our on dictionary of NPC life bytes in which I would rather
+			 * kill myself than do.
+			 */
 
             if (br.BaseStream.Length - br.BaseStream.Position > 0)
             {
-                _releaseOwner = true;
-                this.ReleaseOwner = br.ReadByte();
+                this.Remainder = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
             }
         }
 
         public override short GetLength()
         {
-            short fixedLen = 22;
+            short fixedLen = 21;
 
             /*
 			 * Dynamic packet sizes fucking suck balls
 			 */
 
-            for (int i = 0; i < 4; i++)
-            {
-                if (((byte)Flags & (1 << (i + 2))) != 0)
-                {
-                    fixedLen += 4;
-                }
-            }
-
-
-            if ((Flags & NPCUpdateFlags.FullLife) == NPCUpdateFlags.None)
-            {
-                fixedLen += _npcLifeBytes;
-            }
-
-            if (_releaseOwner)
-            {
-                fixedLen += 1;
-            }
+            fixedLen += (short)Remainder.Length;
 
             return fixedLen;
         }
@@ -159,45 +96,15 @@ namespace Multiplicity.Packets
                 bw.Write(this.VelocityX);
                 bw.Write(this.VelocityY);
                 bw.Write(this.Target);
-                bw.Write((byte)this.Flags);
-
-                for (int i = 0; i < 4; i++)
-                {
-                    if (((byte)Flags & (1 << (i + 2))) != 0)
-                    {
-                        bw.Write(AI[i]);
-                    }
-                }
-
-                bw.Write(NPCNetID);
-
-                if ((Flags & NPCUpdateFlags.FullLife) == NPCUpdateFlags.None)
-                {
-                    switch (_npcLifeBytes)
-                    {
-                        case 4:
-                            bw.Write(Life.Value);
-                            break;
-                        case 2:
-                            bw.Write((short)Life.Value);
-                            break;
-                        case 1:
-                            bw.Write((sbyte)Life.Value);
-                            break;
-                    }
-                }
-
-                if (_releaseOwner)
-                {
-                    bw.Write(ReleaseOwner);
-                }
+                bw.Write(this.Flags);
+                bw.Write(Remainder);
             }
         }
 
         public override string ToString()
         {
-            return string.Format("[NPCUpdate: NPCID={0}, PositionX={1}, PositionY={2}, VelocityX={3}, VelocityY={4}, Target={5}, Flags={6}, Life={7}, AI={8}, NPCNetID={9}, ReleaseOwner={10}]",
-                NPCID, PositionX, PositionY, VelocityX, VelocityY, Target, Flags, Life, AI, NPCNetID, ReleaseOwner);
+            return string.Format("[NPCUpdate: NPCID={0}, PositionX={1}, PositionY={2}, VelocityX={3}, VelocityY={4}, Target={5}, Flags={6}]",
+                NPCID, PositionX, PositionY, VelocityX, VelocityY, Target, Flags);
         }
     }
 }

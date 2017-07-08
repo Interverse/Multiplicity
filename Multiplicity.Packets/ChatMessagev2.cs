@@ -1,7 +1,8 @@
 using System;
-using System.Drawing;
 using System.IO;
 using Multiplicity.Packets.Extensions;
+using System.Drawing;
+using Multiplicity.Packets.Models;
 
 namespace Multiplicity.Packets
 {
@@ -12,16 +13,14 @@ namespace Multiplicity.Packets
     {
 
         /// <summary>
-        /// Gets or sets the PlayerID - If 255 Then No Name|
-        /// </summary>
-        public byte PlayerID { get; set; }
-
-        /// <summary>
         /// Gets or sets the MessageColor - Client cannot change colors|
         /// </summary>
         public Color MessageColor { get; set; }
 
-        public string Message { get; set; }
+        /// <summary>
+        /// Gets or sets the Message - |-|
+        /// </summary>
+        public NetworkText Message { get; set; }
 
         public short MessageLength { get; set; }
 
@@ -41,23 +40,21 @@ namespace Multiplicity.Packets
         public ChatMessagev2(BinaryReader br)
             : base(br)
         {
-            this.PlayerID = br.ReadByte();
             this.MessageColor = br.ReadColor();
-            this.Message = br.ReadString();
+            this.Message = br.ReadNetworkText();
             this.MessageLength = br.ReadInt16();
         }
 
         public override string ToString()
         {
-            return
-	            $"[ChatMessagev2: PlayerID = {PlayerID} MessageColor = {MessageColor} Message = {Message} MessageLength = {MessageLength}]";
+            return $"[ChatMessagev2: MessageColor = {MessageColor} Message = {Message.Text} MessageLength = {MessageLength}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(7 + Message.Length);
+            return (short)(5 + Message.GetLength());
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -65,7 +62,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -77,8 +75,8 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
-                br.Write(PlayerID);
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(MessageColor);
                 br.Write(Message);
                 br.Write(MessageLength);

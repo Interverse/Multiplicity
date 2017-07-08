@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -9,30 +10,54 @@ namespace Multiplicity.Packets
     public class UpdateTileEntity : TerrariaPacket
     {
 
-        public int EntityID { get; set; }
+        public int Key { get; set; }
 
-        public bool Remove { get; set; }
+        public byte IsRemove { get; set; }
 
-        public byte EntityType { get; set; }
+        /// <summary>
+        /// Gets or sets the TileEntityType - If Remove? == false|
+        /// </summary>
+        public byte TileEntityType { get; set; }
 
-        public int Id { get; set; }
+        /// <summary>
+        /// Gets or sets the ID - If Remove? == false|
+        /// </summary>
+        public int TileID { get; set; }
 
+        /// <summary>
+        /// Gets or sets the X - If Remove? == false|
+        /// </summary>
         public short X { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Y - If Remove? == false|
+        /// </summary>
         public short Y { get; set; }
 
-        public short Npc { get; set; }
+        /// <summary>
+        /// Gets or sets the NPC - If Remove? == false && Type = 0|
+        /// </summary>
+        public short NPC { get; set; }
 
+        /// <summary>
+        /// Gets or sets the ItemType - If Remove? == false|
+        /// </summary>
         public short ItemType { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Prefix - If Remove? == false|
+        /// </summary>
         public byte Prefix { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Stack - If Remove? == false|
+        /// </summary>
         public short Stack { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateTileEntity"/> class.
         /// </summary>
-        public UpdateTileEntity() 
+        public UpdateTileEntity()
             : base((byte)PacketTypes.UpdateTileEntity)
         {
 
@@ -41,31 +66,45 @@ namespace Multiplicity.Packets
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateTileEntity"/> class.
         /// </summary>
-        /// <param name="br"></param>
-        public UpdateTileEntity(BinaryReader br) : base(br)
+        /// <param name="br">br</param>
+        public UpdateTileEntity(BinaryReader br)
+            : base(br)
         {
-            this.EntityID = br.ReadInt32();
-            this.Remove = br.ReadBoolean();
-            this.EntityType = br.ReadByte();
-            this.Id = br.ReadInt32();
-            this.X = br.ReadInt16();
-            this.Y = br.ReadInt16();
-            this.Npc = br.ReadInt16();
-            this.ItemType = br.ReadInt16();
-            this.Prefix = br.ReadByte();
-            this.Stack = br.ReadInt16();
+            this.Key = br.ReadInt32();
+            this.IsRemove = br.ReadByte();
+
+            if (this.IsRemove == 0)
+            {
+                this.TileEntityType = br.ReadByte();
+                this.TileID = br.ReadInt32();
+                this.X = br.ReadInt16();
+                this.Y = br.ReadInt16();
+                if (this.TileEntityType == 0)
+                    this.NPC = br.ReadInt16();
+                this.ItemType = br.ReadInt16();
+                this.Prefix = br.ReadByte();
+                this.Stack = br.ReadInt16();
+            }
         }
 
         public override string ToString()
         {
-            return $"[UpdateTileEntity: EntityID = {EntityID} Remove = {Remove} EntityType = {EntityType} Id = {Id} X = {X} Y = {Y} NPC = {Npc} ItemType = {ItemType} Prefix = {Prefix} Stack = {Stack}]";
+            return $"[UpdateTileEntity: Key = {Key} IsRemove = {IsRemove} TileEntityType = {TileEntityType} TileID = {TileID} X = {X} Y = {Y} NPC = {NPC} ItemType = {ItemType} Prefix = {Prefix} Stack = {Stack}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(21);
+            if (IsRemove == 0)
+            {
+                if (TileEntityType == 0)
+                {
+                    return (short)21;
+                }
+                return (short)19;
+            }
+            return (short)(5);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -86,17 +125,23 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
-                br.Write(EntityID);
-                br.Write(Remove);
-                br.Write(EntityType);
-                br.Write(Id);
-                br.Write(X);
-                br.Write(Y);
-                br.Write(Npc);
-                br.Write(ItemType);
-                br.Write(Prefix);
-                br.Write(Stack);
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
+                br.Write(Key);
+                br.Write(IsRemove);
+
+                if (this.IsRemove == 0)
+                {
+                    br.Write(TileEntityType);
+                    br.Write(TileID);
+                    br.Write(X);
+                    br.Write(Y);
+                    if (this.TileEntityType == 0)
+                        br.Write(NPC);
+                    br.Write(ItemType);
+                    br.Write(Prefix);
+                    br.Write(Stack);
+                }
             }
         }
 

@@ -1,13 +1,16 @@
-﻿using System.IO;
+using System;
+using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The MinionAttackTargetUpdate (73) packet.
+    /// The MinionAttackTargetUpdate (0x73) packet.
     /// </summary>
     public class MinionAttackTargetUpdate : TerrariaPacket
     {
-        public byte PlayerId { get; set; }
+
+        public byte PlayerID { get; set; }
 
         public short MinionAttackTarget { get; set; }
 
@@ -27,13 +30,13 @@ namespace Multiplicity.Packets
         public MinionAttackTargetUpdate(BinaryReader br)
             : base(br)
         {
-            PlayerId = br.ReadByte();
-            MinionAttackTarget = br.ReadInt16();
+            this.PlayerID = br.ReadByte();
+            this.MinionAttackTarget = br.ReadInt16();
         }
 
         public override string ToString()
         {
-            return $"[MinionAttackTargetUpdate: PlayerId = {PlayerId} MinionAttackTarget = {MinionAttackTarget}]";
+            return $"[MinionAttackTargetUpdate: PlayerID = {PlayerID} MinionAttackTarget = {MinionAttackTarget}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -63,11 +66,12 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
-                br.Write(PlayerId);
+                br.Write(PlayerID);
                 br.Write(MinionAttackTarget);
             }
         }
 
         #endregion
+
     }
 }

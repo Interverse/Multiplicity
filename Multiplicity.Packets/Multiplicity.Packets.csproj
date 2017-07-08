@@ -172,6 +172,7 @@
     <Compile Include="UpdateItemDrop2.cs" />
     <Compile Include="Extensions\BinaryReader.Extensions.cs" />
     <Compile Include="PacketTypes.cs" />
+    <Compile Include="Models\NetworkText.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

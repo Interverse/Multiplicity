@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -21,6 +23,16 @@ namespace Multiplicity.Packets
         public byte Zone2 { get; set; }
 
         /// <summary>
+        /// Gets or sets the Zone3 - 1 = Overworld, 2 = Dirt Layer, 4 = Rock Layer, 8 = Underworld, 16 = Beach, 32 = Rain, 64 = Sandstorm|
+        /// </summary>
+        public byte Zone3 { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Zone4 - 1 = Old One's Army|
+        /// </summary>
+        public byte Zone4 { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PlayerZone"/> class.
         /// </summary>
         public PlayerZone()
@@ -39,18 +51,20 @@ namespace Multiplicity.Packets
             this.PlayerID = br.ReadByte();
             this.Zone1 = br.ReadByte();
             this.Zone2 = br.ReadByte();
+            this.Zone3 = br.ReadByte();
+            this.Zone4 = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[PlayerZone: PlayerID = {PlayerID} Zone1 = {Zone1} Zone2 = {Zone2}]";
+            return $"[PlayerZone: PlayerID = {PlayerID} Zone1 = {Zone1} Zone2 = {Zone2} Zone3 = {Zone3} Zone4 = {Zone4}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(3);
+            return (short)(5);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -58,7 +72,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -70,10 +85,13 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(PlayerID);
                 br.Write(Zone1);
                 br.Write(Zone2);
+                br.Write(Zone3);
+                br.Write(Zone4);
             }
         }
 

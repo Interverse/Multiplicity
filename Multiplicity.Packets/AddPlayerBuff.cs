@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
@@ -13,7 +14,7 @@ namespace Multiplicity.Packets
 
         public byte Buff { get; set; }
 
-        public short Time { get; set; }
+        public int Time { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AddPlayerBuff"/> class.
@@ -33,7 +34,7 @@ namespace Multiplicity.Packets
         {
             this.PlayerID = br.ReadByte();
             this.Buff = br.ReadByte();
-            this.Time = br.ReadInt16();
+            this.Time = br.ReadInt32();
         }
 
         public override string ToString()
@@ -45,7 +46,7 @@ namespace Multiplicity.Packets
 
         public override short GetLength()
         {
-            return (short)(4);
+            return (short)(6);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -53,7 +54,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -65,7 +67,8 @@ namespace Multiplicity.Packets
              * the regressions of unconditionally closing the TCP socket
              * once the payload of data has been sent to the client.
              */
-            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true)) {
+            using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
+            {
                 br.Write(PlayerID);
                 br.Write(Buff);
                 br.Write(Time);

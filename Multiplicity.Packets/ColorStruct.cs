@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Multiplicity.Packets
 {
-    public class ColorStruct
+    public struct ColorStruct
     {
         public byte R { get; set; }
         public byte G { get; set; }

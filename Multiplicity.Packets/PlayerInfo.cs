@@ -30,19 +30,19 @@ namespace Multiplicity.Packets
 
         public byte HideMisc { get; set; }
 
-        public Color HairColor { get; set; }
+        public ColorStruct HairColor { get; set; }
 
-        public Color SkinColor { get; set; }
+        public ColorStruct SkinColor { get; set; }
 
-        public Color EyeColor { get; set; }
+        public ColorStruct EyeColor { get; set; }
 
-        public Color ShirtColor { get; set; }
+        public ColorStruct ShirtColor { get; set; }
 
-        public Color UnderShirtColor { get; set; }
+        public ColorStruct UnderShirtColor { get; set; }
 
-        public Color PantsColor { get; set; }
+        public ColorStruct PantsColor { get; set; }
 
-        public Color ShoeColor { get; set; }
+        public ColorStruct ShoeColor { get; set; }
 
         public byte Difficulty { get; set; }
 

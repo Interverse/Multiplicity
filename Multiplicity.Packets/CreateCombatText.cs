@@ -15,7 +15,7 @@ namespace Multiplicity.Packets
 
         public float Y { get; set; }
 
-        public Color Color { get; set; }
+        public ColorStruct Color { get; set; }
 
         public int HealAmount { get; set; }
 

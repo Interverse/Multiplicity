@@ -15,7 +15,7 @@ namespace Multiplicity.Packets
         /// <summary>
         /// Gets or sets the MessageColor - Client cannot change colors|
         /// </summary>
-        public Color MessageColor { get; set; }
+        public ColorStruct MessageColor { get; set; }
 
         /// <summary>
         /// Gets or sets the Message - |-|

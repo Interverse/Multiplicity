@@ -129,7 +129,13 @@ namespace Multiplicity.Packets
 
         public override void ToStream(Stream stream, bool includeHeader = true)
         {
-            base.ToStream(stream, includeHeader);
+            /*
+             * Length and ID headers get written in the base packet class.
+             */
+            if (includeHeader)
+            {
+                base.ToStream(stream, includeHeader);
+            }
 
             using (BinaryWriter bw = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))
             {

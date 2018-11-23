@@ -8,8 +8,6 @@ namespace Multiplicity.Packets
     /// </summary>
     public class PlayerDeathV2 : TerrariaPacket
     {
-        private int _packetLength;
-
         public byte PlayerId { get; set; }
 
         /// <summary>
@@ -87,52 +85,21 @@ namespace Multiplicity.Packets
             PlayerDeathReason = br.ReadByte();
 
             if (PlayerDeathReason.ReadBit(0))
-            {
                 FromPlayerIndex = br.ReadInt16();
-                _packetLength += 2;
-            }
-
             if (PlayerDeathReason.ReadBit(1))
-            {
                 FromNpcIndex = br.ReadInt16();
-                _packetLength += 2;
-            }
-
             if (PlayerDeathReason.ReadBit(2))
-            {
                 FromProjectileIndex = br.ReadInt16();
-                _packetLength += 2;
-            }
-
             if (PlayerDeathReason.ReadBit(3))
-            {
                 FromOther = br.ReadByte();
-                _packetLength += 1;
-            }
-
             if (PlayerDeathReason.ReadBit(4))
-            {
                 FromProjectileType = br.ReadInt16();
-                _length += 2;
-            }
-
             if (PlayerDeathReason.ReadBit(5))
-            {
                 FromItemType = br.ReadInt16();
-                _packetLength += 2;
-            }
-
             if (PlayerDeathReason.ReadBit(6))
-            {
                 FromItemPrefix = br.ReadByte();
-                _packetLength += 1;
-            }
-
             if (PlayerDeathReason.ReadBit(7))
-            {
                 FromCustomReason = br.ReadString();
-                _packetLength += FromCustomReason.Length;
-            }
 
             Damage = br.ReadInt16();
             HitDirection = br.ReadByte();
@@ -149,7 +116,24 @@ namespace Multiplicity.Packets
 
         public override short GetLength()
         {
-            return (short)(6 + _length);
+            int _packetLength = 0;
+            if (PlayerDeathReason.ReadBit(0))
+                _packetLength += 2;
+            if (PlayerDeathReason.ReadBit(1))
+                _packetLength += 2;
+            if (PlayerDeathReason.ReadBit(2))
+                _packetLength += 2;
+            if (PlayerDeathReason.ReadBit(3))
+                _packetLength += 1;
+            if (PlayerDeathReason.ReadBit(4))
+                _length += 2;
+            if (PlayerDeathReason.ReadBit(5))
+                _packetLength += 2;
+            if (PlayerDeathReason.ReadBit(6))
+                _packetLength += 1;
+            if (PlayerDeathReason.ReadBit(7))
+                _packetLength += 1 + FromCustomReason.Length;
+            return (short)(6 + _packetLength);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)

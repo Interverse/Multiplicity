@@ -60,7 +60,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 

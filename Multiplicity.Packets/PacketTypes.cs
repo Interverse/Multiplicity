@@ -119,7 +119,8 @@
 		/*115*/ MinionAttackTargetUpdate,
 		/*116*/ CrystalInvasionSendWaitTime,
 		/*117*/ PlayerHurtV2,
-		/*118*/ PlayerDeathV2
+		/*118*/ PlayerDeathV2,
+        /*119*/ CombatTextString
     }
 }
 

@@ -77,7 +77,10 @@ namespace Multiplicity.Packets
 
         public override short GetLength()
         {
-            return (short)(12 + (Pulley.ReadBit(2) ? 8 : 0));
+            byte length = 12;
+            if (Pulley.ReadBit(2))
+                length += 8;
+            return (short)(length);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)

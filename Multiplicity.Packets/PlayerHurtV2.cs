@@ -66,7 +66,7 @@ namespace Multiplicity.Packets
         /// </summary>
         public byte Flags { get; set; }
 
-        public byte CooldownCounter { get; set; }
+        public sbyte CooldownCounter { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerHurtV2"/> class.
@@ -107,6 +107,7 @@ namespace Multiplicity.Packets
             Damage = br.ReadInt16();
             HitDirection = br.ReadByte();
             Flags = br.ReadByte();
+            CooldownCounter = br.ReadSByte();
         }
 
         public override string ToString()
@@ -135,8 +136,8 @@ namespace Multiplicity.Packets
             if (PlayerDeathReason.ReadBit(6))
                 _packetLength += 1;
             if (PlayerDeathReason.ReadBit(7))
-                _packetLength += FromCustomReason.Length;
-            return (short)(6 + _packetLength);
+                _packetLength += 1 + FromCustomReason.Length;
+            return (short)(7 + _packetLength);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)

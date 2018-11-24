@@ -140,7 +140,8 @@ namespace Multiplicity.Packets
             /*115*/ { PacketTypes.MinionAttackTargetUpdate, (br) => new MinionAttackTargetUpdate(br) },
             /*116*/ { PacketTypes.CrystalInvasionSendWaitTime, (br) => new CrystalInvasionSendWaitTime(br) },
             /*117*/ { PacketTypes.PlayerHurtV2, (br) => new PlayerHurtV2(br) },
-            /*118*/ { PacketTypes.PlayerDeathV2, (br) => new PlayerDeathV2(br) }
+            /*118*/ { PacketTypes.PlayerDeathV2, (br) => new PlayerDeathV2(br) },
+            /*119*/ { PacketTypes.CombatTextString, (br) => new CombatTextString(br) }
         };
 
         /// <summary>

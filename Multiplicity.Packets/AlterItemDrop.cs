@@ -73,17 +73,17 @@ namespace Multiplicity.Packets
             if (this.Flags1.ReadBit(7))
             {
                 this.Flags2 = br.ReadByte();
-                if (this.Flags1.ReadBit(0))
+                if (this.Flags2.ReadBit(0))
                     this.Width = br.ReadInt16();
-                if (this.Flags1.ReadBit(1))
+                if (this.Flags2.ReadBit(1))
                     this.Height = br.ReadInt16();
-                if (this.Flags1.ReadBit(2))
+                if (this.Flags2.ReadBit(2))
                     this.Scale = br.ReadSingle();
-                if (this.Flags1.ReadBit(3))
+                if (this.Flags2.ReadBit(3))
                     this.Ammo = br.ReadInt16();
-                if (this.Flags1.ReadBit(4))
+                if (this.Flags2.ReadBit(4))
                     this.UseAmmo = br.ReadInt16();
-                if (this.Flags1.ReadBit(5))
+                if (this.Flags2.ReadBit(5))
                     this.NotAmmo = br.ReadBoolean();
             }
         }
@@ -110,17 +110,17 @@ namespace Multiplicity.Packets
             if (this.Flags1.ReadBit(7))
             {
                 length += 1;
-                if (this.Flags1.ReadBit(0))
+                if (this.Flags2.ReadBit(0))
                     length += 2;
-                if (this.Flags1.ReadBit(1))
+                if (this.Flags2.ReadBit(1))
                     length += 2;
-                if (this.Flags1.ReadBit(2))
+                if (this.Flags2.ReadBit(2))
                     length += 4;
-                if (this.Flags1.ReadBit(3))
+                if (this.Flags2.ReadBit(3))
                     length += 2;
-                if (this.Flags1.ReadBit(4))
+                if (this.Flags2.ReadBit(4))
                     length += 2;
-                if (this.Flags1.ReadBit(5))
+                if (this.Flags2.ReadBit(5))
                     length += 1;
             }
 
@@ -159,17 +159,17 @@ namespace Multiplicity.Packets
                 if (this.Flags1.ReadBit(128))
                 {
                     bw.Write(Flags2);
-                    if (this.Flags1.ReadBit(1))
+                    if (this.Flags2.ReadBit(1))
                         bw.Write(Width);
-                    if (this.Flags1.ReadBit(1))
+                    if (this.Flags2.ReadBit(1))
                         bw.Write(Height);
-                    if (this.Flags1.ReadBit(1))
+                    if (this.Flags2.ReadBit(1))
                         bw.Write(Scale);
-                    if (this.Flags1.ReadBit(1))
+                    if (this.Flags2.ReadBit(1))
                         bw.Write(Ammo);
-                    if (this.Flags1.ReadBit(1))
+                    if (this.Flags2.ReadBit(1))
                         bw.Write(UseAmmo);
-                    if (this.Flags1.ReadBit(1))
+                    if (this.Flags2.ReadBit(1))
                         bw.Write(NotAmmo);
                 }
             }

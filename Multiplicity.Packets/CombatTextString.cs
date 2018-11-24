@@ -1,46 +1,56 @@
+﻿using System;
 using System.IO;
+using Multiplicity.Packets.Extensions;
+using Multiplicity.Packets.Models;
 
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The TravellingMerchantInventory (0x48) packet.
+    /// The CombatTextString (0x77) packet.
     /// </summary>
-    public class TravellingMerchantInventory : TerrariaPacket
+    public class CombatTextString : TerrariaPacket
     {
 
-        public short[] Items { get; set; }
+        public float X { get; set; }
+
+        public float Y { get; set; }
+
+        public ColorStruct Color { get; set; }
+
+        public NetworkText CombatText { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TravellingMerchantInventory"/> class.
+        /// Initializes a new instance of the <see cref="CombatTextString"/> class.
         /// </summary>
-        public TravellingMerchantInventory()
-            : base((byte)PacketTypes.TravellingMerchantInventory)
+        public CombatTextString()
+            : base((byte)PacketTypes.CombatTextString)
         {
 
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TravellingMerchantInventory"/> class.
+        /// Initializes a new instance of the <see cref="CombatTextString"/> class.
         /// </summary>
         /// <param name="br">br</param>
-        public TravellingMerchantInventory(BinaryReader br)
+        public CombatTextString(BinaryReader br)
             : base(br)
         {
-            Items = new short[40];
-            for (int i = 0; i < 40; i++)
-                Items[i] = br.ReadInt16();
+            this.X = br.ReadSingle();
+            this.Y = br.ReadSingle();
+            this.Color = br.ReadColor();
+            this.CombatText = br.ReadNetworkText();
         }
 
         public override string ToString()
         {
-            return string.Format("[TravellingMerchantInventory]");
+            return $"[CombatTextString: X = {X}, Y = {Y}, Color = {Color}, CombatText = {CombatText}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(80);
+            return (short)(11 + CombatText.GetLength());
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -48,7 +58,8 @@ namespace Multiplicity.Packets
             /*
              * Length and ID headers get written in the base packet class.
              */
-            if (includeHeader) {
+            if (includeHeader)
+            {
                 base.ToStream(stream, includeHeader);
             }
 
@@ -62,8 +73,10 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
-                for (int i = 0; i < 40; i++)
-                    br.Write(Items[i]);
+                br.Write(X);
+                br.Write(Y);
+                br.Write(Color);
+                br.Write(CombatText);
             }
         }
 

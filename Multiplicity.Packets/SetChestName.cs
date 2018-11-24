@@ -45,13 +45,10 @@ namespace Multiplicity.Packets
             this.NameLength = br.ReadByte();
             this.ChestName = String.Empty;
 
-            if (this.NameLength != 0)
-            {
-                if (this.NameLength <= 20)
-                    this.ChestName = br.ReadString();
-                else if (this.NameLength != 255)
-                    this.NameLength = 0;
-            }
+            if (this.NameLength >= 0 && this.NameLength <= 20)
+                this.ChestName = br.ReadString();
+            else
+                this.NameLength = 0;
         }
 
         public override string ToString()
@@ -63,11 +60,7 @@ namespace Multiplicity.Packets
 
         public override short GetLength()
         {
-            const short Length = 7;
-            if (ChestName == null)
-                return Length;
-
-            return (short)(Length + ChestName.Length + 1);
+            return (short)(8 + ChestName?.Length);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -93,11 +86,10 @@ namespace Multiplicity.Packets
                 br.Write(ChestID);
                 br.Write(ChestX);
                 br.Write(ChestY);
+                NameLength = (byte)ChestName?.Length;
+                br.Write(NameLength);
                 if (ChestName != null)
-                {
-                    br.Write(NameLength);
                     br.Write(ChestName);
-                }
             }
         }
 

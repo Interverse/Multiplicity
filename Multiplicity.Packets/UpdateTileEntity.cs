@@ -12,7 +12,7 @@ namespace Multiplicity.Packets
 
         public int Key { get; set; }
 
-        public byte IsRemove { get; set; }
+        public bool IsRemove { get; set; }
 
         /// <summary>
         /// Gets or sets the TileEntityType - If Remove? == false|
@@ -71,9 +71,9 @@ namespace Multiplicity.Packets
             : base(br)
         {
             this.Key = br.ReadInt32();
-            this.IsRemove = br.ReadByte();
+            this.IsRemove = br.ReadBoolean();
 
-            if (this.IsRemove == 0)
+            if (!this.IsRemove)
             {
                 this.TileEntityType = br.ReadByte();
                 this.TileID = br.ReadInt32();
@@ -96,15 +96,14 @@ namespace Multiplicity.Packets
 
         public override short GetLength()
         {
-            if (IsRemove == 0)
+            short length = 5;
+            if (!IsRemove)
             {
+                length += 14;
                 if (TileEntityType == 0)
-                {
-                    return (short)21;
-                }
-                return (short)19;
+                    length += 2;
             }
-            return (short)(5);
+            return (short)(length);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -130,7 +129,7 @@ namespace Multiplicity.Packets
                 br.Write(Key);
                 br.Write(IsRemove);
 
-                if (this.IsRemove == 0)
+                if (!this.IsRemove)
                 {
                     br.Write(TileEntityType);
                     br.Write(TileID);

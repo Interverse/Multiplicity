@@ -95,7 +95,14 @@ namespace Multiplicity.Packets
 
         public override short GetLength()
         {
-            return (short)(38);
+            byte length = 28;
+            if (this.AIFlags.ReadBit(0))
+                length += 4;
+            if (this.AIFlags.ReadBit(1))
+                length += 4;
+            if (this.AIFlags.ReadBit(2))
+                length += 2;
+            return (short)(length);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)

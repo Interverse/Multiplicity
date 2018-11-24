@@ -126,7 +126,7 @@ namespace Multiplicity.Packets
             if (PlayerDeathReason.ReadBit(3))
                 _packetLength += 1;
             if (PlayerDeathReason.ReadBit(4))
-                _length += 2;
+                _packetLength += 2;
             if (PlayerDeathReason.ReadBit(5))
                 _packetLength += 2;
             if (PlayerDeathReason.ReadBit(6))

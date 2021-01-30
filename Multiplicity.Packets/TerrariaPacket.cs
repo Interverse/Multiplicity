@@ -217,7 +217,7 @@ namespace Multiplicity.Packets
         /// </param>
         public static TerrariaPacket Deserialize(BinaryReader br, byte id)
         {
-            br.BaseStream.Position = PACKET_HEADER_LEN;
+            br.BaseStream.Seek(0, SeekOrigin.Begin);
 
             if (deserializerMap.ContainsKey((PacketTypes)id) == false)
             {

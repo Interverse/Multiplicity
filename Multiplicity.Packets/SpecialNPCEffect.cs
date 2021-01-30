@@ -13,7 +13,7 @@ namespace Multiplicity.Packets
         public byte PlayerID { get; set; }
 
         /// <summary>
-        /// Gets or sets the Type - Values: 1 = Spawn Skeletron, 2 = Cause sound at player, 3 = Start Sundialing (Only works if server is receiving), 4 = BigMimcSpawnSmoke|
+        /// Gets or sets the Type - Values: 1 = Spawn Skeletron, 2 = Cause sound at player, 3 = Start Sundialing (Only works if server is receiving), 4 = BigMimcSpawnSmoke, 5 = Register Torch God in Bestiary|
         /// </summary>
         public byte Type { get; set; }
 

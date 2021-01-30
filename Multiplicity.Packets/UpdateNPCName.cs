@@ -18,6 +18,11 @@ namespace Multiplicity.Packets
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets the Name - Only if client is receiving packet|
+        /// </summary>
+        public int TownNpcVariationIndex { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="UpdateNPCName"/> class.
         /// </summary>
         public UpdateNPCName()
@@ -38,18 +43,19 @@ namespace Multiplicity.Packets
             if (br.BaseStream.Length > br.BaseStream.Position) {
                 this.Name = br.ReadString();
             }
+            this.TownNpcVariationIndex = br.ReadInt32();
         }
 
         public override string ToString()
         {
-            return $"[UpdateNPCName: NPCID = {NPCID} Name = {Name}]";
+            return $"[UpdateNPCName: NPCID = {NPCID} Name = {Name} TownNpcVariationIndex = {TownNpcVariationIndex}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            int length = 2;
+            int length = 6;
 
             if (!string.IsNullOrEmpty(Name)) {
                 length += 1 + Name.Length;
@@ -82,6 +88,7 @@ namespace Multiplicity.Packets
                 {
                     br.Write(Name);
                 }
+                br.Write(TownNpcVariationIndex);
             }
         }
 

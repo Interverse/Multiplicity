@@ -1,58 +1,60 @@
-using System;
+﻿using System;
 using System.IO;
-using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The ChestItem (0x20) packet.
+    /// The TEDisplayDollItemSync (0x79) packet.
     /// </summary>
-    public class ChestItem : TerrariaPacket
+    public class TEDisplayDollItemSync : TerrariaPacket
     {
 
-        public short ChestID { get; set; }
+        public byte PlayerID { get; set; }
 
-        public byte ItemSlot { get; set; }
+        public int TileEntityID { get; set; }
 
-        public short Stack { get; set; }
+        public byte ItemIndex { get; set; }
+
+        public ushort ItemID { get; set; }
+
+        public ushort Stack { get; set; }
 
         public byte Prefix { get; set; }
 
-        public short ItemNetID { get; set; }
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChestItem"/> class.
+        /// Initializes a new instance of the <see cref="TEDisplayDollItemSync"/> class.
         /// </summary>
-        public ChestItem()
-            : base((byte)PacketTypes.ChestItem)
+        public TEDisplayDollItemSync()
+            : base((byte)PacketTypes.TEDisplayDollItemSync)
         {
 
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChestItem"/> class.
+        /// Initializes a new instance of the <see cref="TEDisplayDollItemSync"/> class.
         /// </summary>
         /// <param name="br">br</param>
-        public ChestItem(BinaryReader br)
+        public TEDisplayDollItemSync(BinaryReader br)
             : base(br)
         {
-            this.ChestID = br.ReadInt16();
-            this.ItemSlot = br.ReadByte();
-            this.Stack = br.ReadInt16();
+            this.PlayerID = br.ReadByte();
+            this.TileEntityID = br.ReadInt32();
+            this.ItemIndex = br.ReadByte();
+            this.ItemID = br.ReadUInt16();
+            this.Stack = br.ReadUInt16();
             this.Prefix = br.ReadByte();
-            this.ItemNetID = br.ReadInt16();
         }
 
         public override string ToString()
         {
-            return $"[ChestItem: ChestID = {ChestID} ItemSlot = {ItemSlot} Stack = {Stack} Prefix = {Prefix} ItemNetID = {ItemNetID}]";
+            return $"[TEDisplayDollItemSync: PlayerID = {PlayerID}, TileEntityID = {TileEntityID}, ItemIndex = {ItemIndex}, ItemID = {ItemID}, Stack = {Stack}, Prefix = {Prefix}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(8);
+            return (short)(11);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -75,11 +77,12 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
-                br.Write(ChestID);
-                br.Write(ItemSlot);
+                br.Write(PlayerID);
+                br.Write(TileEntityID);
+                br.Write(ItemIndex);
+                br.Write(ItemID);
                 br.Write(Stack);
                 br.Write(Prefix);
-                br.Write(ItemNetID);
             }
         }
 

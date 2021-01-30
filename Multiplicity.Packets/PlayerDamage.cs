@@ -4,8 +4,9 @@ using System.IO;
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The PlayerDamage (0x1A) packet.
+    /// Legacy PlayerDamage (0x1A) packet.
     /// </summary>
+    [Obsolete("Is now never sent")]
     public class PlayerDamage : TerrariaPacket
     {
 

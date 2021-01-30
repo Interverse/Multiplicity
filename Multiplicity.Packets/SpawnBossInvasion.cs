@@ -13,7 +13,7 @@ namespace Multiplicity.Packets
         public short PlayerID { get; set; }
 
         /// <summary>
-        /// Gets or sets the Type - Negative Values: -1 = GoblinInvasion, -2 = FrostInvasion, -3 = PirateInvasion, -4 = PumpkinMoon, -5 = SnowMoon, -6 = Eclipse, -7 = Martian Moon Positive Values: Spawns any of these NPCs:4,13,50,126,125,134,127,128,131,129,130,222,245,266,370,75,398,439,493,507,422,517|
+        /// Gets or sets the Type - Negative Values: -1 = GoblinInvasion, -2 = FrostInvasion, -3 = PirateInvasion, -4 = PumpkinMoon, -5 = SnowMoon, -6 = Eclipse, -7 = Martian Moon, -8 = Impending Doom, -10 = Blood Moon, -11 = Combat Book Used, -12 = Bought Cat, -13 = Bought Dog, -14 = Bought Bunny, Positive Values: Spawns any of these NPCs: 4, 13, 50, 126, 125, 134, 127, 128, 131, 129, 130, 222, 245, 266, 370, 657|
         /// </summary>
         public short Type { get; set; }
 

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Multiplicity.Packets.Extensions;
 using Multiplicity.Packets.Models;
+using Multiplicity.Packets.BitFlags;
 
 namespace Multiplicity.Packets
 {
@@ -17,6 +18,11 @@ namespace Multiplicity.Packets
         public int StatusMax { get; set; }
 
         public NetworkText StatusText { get; set; }
+
+        /// <summary>
+        /// See <see cref="StatusTextFlags"/> for byte list
+        /// </summary>
+        public byte StatusTextFlag;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Status"/> class.
@@ -36,18 +42,19 @@ namespace Multiplicity.Packets
         {
             this.StatusMax = br.ReadInt32();
             this.StatusText = br.ReadNetworkText();
+            this.StatusTextFlag = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[Status: StatusMax = {StatusMax} StatusText = {StatusText.Text}]";
+            return $"[Status: StatusMax = {StatusMax} StatusText = {StatusText.Text} StatusTextFlags = {StatusText}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(4 + StatusText.GetLength());
+            return (short)(5 + StatusText.GetLength());
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -72,6 +79,7 @@ namespace Multiplicity.Packets
             {
                 br.Write(StatusMax);
                 br.Write(StatusText);
+                br.Write(StatusTextFlag);
             }
         }
 

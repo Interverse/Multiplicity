@@ -17,7 +17,7 @@ namespace Multiplicity.Packets
         /// <summary>
         /// Gets or sets the Type - 2 = Logic Sensor 1 = Item Frame 0 = Training Dummy|
         /// </summary>
-        public byte Type { get; set; }
+        public byte TileEntityType { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaceTileEntity"/> class.
@@ -37,12 +37,12 @@ namespace Multiplicity.Packets
         {
             this.X = br.ReadInt16();
             this.Y = br.ReadInt16();
-            this.Type = br.ReadByte();
+            this.TileEntityType = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[PlaceTileEntity: X = {X} Y = {Y} Type = {Type}]";
+            return $"[PlaceTileEntity: X = {X} Y = {Y} TileEntityType = {TileEntityType}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -74,7 +74,7 @@ namespace Multiplicity.Packets
             {
                 br.Write(X);
                 br.Write(Y);
-                br.Write(Type);
+                br.Write(TileEntityType);
             }
         }
 

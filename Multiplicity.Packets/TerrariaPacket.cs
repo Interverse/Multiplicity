@@ -25,12 +25,12 @@ namespace Multiplicity.Packets
         public static Dictionary<PacketTypes, Func<BinaryReader, TerrariaPacket>> deserializerMap = new Dictionary<PacketTypes, Func<BinaryReader, TerrariaPacket>>() {
             /*001*/ { PacketTypes.ConnectRequest, (br) => new ConnectRequest(br) },
             /*002*/ { PacketTypes.Disconnect, (br) => new Disconnect(br) },
-            /*003*/ { PacketTypes.ContinueConnecting, (br) => new ContinueConnecting(br) },
+            /*003*/ { PacketTypes.SetUserSlot, (br) => new SetUserSlot(br) },
             /*004*/ { PacketTypes.PlayerInfo, (br) => new PlayerInfo(br) },
             /*005*/ { PacketTypes.PlayerInventorySlot, (br) => new PlayerInventorySlot(br) },
-            /*006*/ { PacketTypes.ContinueConnecting2, (br) => new ContinueConnecting2(br) },
+            /*006*/ { PacketTypes.RequestWorldData, (br) => new RequestWorldData(br) },
             /*007*/ { PacketTypes.WorldInfo, (br) => new WorldInfo(br) },
-            /*008*/ { PacketTypes.GetSection, (br) => new GetSection(br) },
+            /*008*/ { PacketTypes.RequestEssentialTiles, (br) => new RequestEssentialTiles(br) },
             /*009*/ { PacketTypes.Status, (br) => new Status(br) },
             /*010*/ { PacketTypes.SendSection, (br) => new SendSection(br) },
             /*011*/ { PacketTypes.SectionTileFrame, (br) => new SectionTileFrame(br) },
@@ -53,9 +53,9 @@ namespace Multiplicity.Packets
             /*028*/ { PacketTypes.NPCStrike, (br) => new NPCStrike(br) },
             /*029*/ { PacketTypes.DestroyProjectile, (br) => new DestroyProjectile(br) },
             /*030*/ { PacketTypes.TogglePVP, (br) => new TogglePVP(br) },
-            /*031*/ { PacketTypes.GetChestContents, (br) => new GetChestContents(br) },
-            /*032*/ { PacketTypes.ChestItem, (br) => new ChestItem(br) },
-            /*033*/ { PacketTypes.SetChestName, (br) => new SetChestName(br) },
+            /*031*/ { PacketTypes.OpenChest, (br) => new OpenChest(br) },
+            /*032*/ { PacketTypes.UpdateChestItem, (br) => new UpdateChestItem(br) },
+            /*033*/ { PacketTypes.SyncActiveChest, (br) => new SyncActiveChest(br) },
             /*034*/ { PacketTypes.PlaceChest, (br) => new PlaceChest(br) },
             /*035*/ { PacketTypes.HealEffect, (br) => new HealEffect(br) },
             /*036*/ { PacketTypes.PlayerZone, (br) => new PlayerZone(br) },
@@ -141,7 +141,28 @@ namespace Multiplicity.Packets
             /*116*/ { PacketTypes.CrystalInvasionSendWaitTime, (br) => new CrystalInvasionSendWaitTime(br) },
             /*117*/ { PacketTypes.PlayerHurtV2, (br) => new PlayerHurtV2(br) },
             /*118*/ { PacketTypes.PlayerDeathV2, (br) => new PlayerDeathV2(br) },
-            /*119*/ { PacketTypes.CombatTextString, (br) => new CombatTextString(br) }
+            /*119*/ { PacketTypes.CombatTextString, (br) => new CombatTextString(br) },
+            /*120*/ { PacketTypes.Emoji, (br) => new Emoji(br) },
+            /*121*/ { PacketTypes.TEDisplayDollItemSync, (br) => new TEDisplayDollItemSync(br) },
+            /*122*/ { PacketTypes.RequestTileEntityInteraction, (br) => new RequestTileEntityInteraction(br) },
+            /*123*/ { PacketTypes.WeaponsRackTryPlacing, (br) => new WeaponsRackTryPlacing(br) },
+            /*124*/ { PacketTypes.TEHatRackItemSync, (br) => new TEHatRackItemSync(br) },
+            /*125*/ { PacketTypes.SyncTilePicking, (br) => new SyncTilePicking(br) },
+            /*126*/ { PacketTypes.SyncRevengeMarker, (br) => new SyncRevengeMarker(br) },
+            /*127*/ { PacketTypes.RemoveRevengeMarker, (br) => new RemoveRevengeMarker(br) },
+            /*128*/ { PacketTypes.LandGolfBallInCup, (br) => new LandGolfBallInCup(br) },
+            /*129*/ { PacketTypes.FinishedConnectingToServer, (br) => new FinishedConnectingToServer(br) },
+            /*130*/ { PacketTypes.FishOutNPC, (br) => new FishOutNPC(br) },
+            /*131*/ { PacketTypes.TamperWithNPC, (br) => new TamperWithNPC(br) },
+            /*132*/ { PacketTypes.PlayLegacySound, (br) => new PlayLegacySound(br) },
+            /*133*/ { PacketTypes.FoodPlatterTryPlacing, (br) => new FoodPlatterTryPlacing(br) },
+            /*134*/ { PacketTypes.UpdatePlayerLuckFactors, (br) => new UpdatePlayerLuckFactors(br) },
+            /*135*/ { PacketTypes.DeadPlayer, (br) => new DeadPlayer(br) },
+            /*136*/ { PacketTypes.SyncCavernMonsterType, (br) => new SyncCavernMonsterType(br) },
+            /*137*/ { PacketTypes.RequestNPCBuffRemoval, (br) => new RequestNPCBuffRemoval(br) },
+            /*138*/ { PacketTypes.ClientFinishedInventoryChangesOnThisTick, (br) => new ClientFinishedInventoryChangesOnThisTick(br) },
+            /*139*/ { PacketTypes.SetCountsAsHostForGameplay, (br) => new SetCountsAsHostForGameplay(br) },
+            /*140*/ { PacketTypes.SetMiscEventValues, (br) => new SetMiscEventValues(br) },
         };
 
         /// <summary>
@@ -231,17 +252,26 @@ namespace Multiplicity.Packets
         /// </param>
         public override void ToStream(Stream stream, bool includeHeader = true)
         {
-          if (includeHeader == false)
-          {
-            return;
-          }
+            if (includeHeader == false)
+            {
+                return;
+            }
 
-          using (BinaryWriter br = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))
-          {
-            br.Write((short)(GetLength() + PACKET_HEADER_LEN));
-            br.Write(ID);
-          }
+            using (BinaryWriter br = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))
+            {
+                br.Write((short)(GetLength() + PACKET_HEADER_LEN));
+                br.Write(ID);
+            }
         }
-	}
+
+        public byte[] ToArray()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                ToStream(ms);
+                return ms.ToArray();
+            }
+        }
+    }
 }
 

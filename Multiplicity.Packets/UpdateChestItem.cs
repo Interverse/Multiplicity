@@ -5,62 +5,54 @@ using Multiplicity.Packets.Extensions;
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The SetChestName (0x21) packet.
+    /// The UpdateChestItem (0x20) packet.
     /// </summary>
-    public class SetChestName : TerrariaPacket
+    public class UpdateChestItem : TerrariaPacket
     {
 
         public short ChestID { get; set; }
 
-        public short ChestX { get; set; }
+        public byte ItemSlot { get; set; }
 
-        public short ChestY { get; set; }
+        public short Stack { get; set; }
 
-        public byte NameLength { get; set; }
+        public byte Prefix { get; set; }
 
-        /// <summary>
-        /// Gets or sets the ChestName - Only if length > 0 && <= 20|
-        /// </summary>
-        public string ChestName { get; set; }
+        public short ItemNetID { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SetChestName"/> class.
+        /// Initializes a new instance of the <see cref="UpdateChestItem"/> class.
         /// </summary>
-        public SetChestName()
-            : base((byte)PacketTypes.SetChestName)
+        public UpdateChestItem()
+            : base((byte)PacketTypes.UpdateChestItem)
         {
 
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SetChestName"/> class.
+        /// Initializes a new instance of the <see cref="UpdateChestItem"/> class.
         /// </summary>
         /// <param name="br">br</param>
-        public SetChestName(BinaryReader br)
+        public UpdateChestItem(BinaryReader br)
             : base(br)
         {
             this.ChestID = br.ReadInt16();
-            this.ChestX = br.ReadInt16();
-            this.ChestY = br.ReadInt16();
-            this.NameLength = br.ReadByte();
-            this.ChestName = String.Empty;
-
-            if (this.NameLength >= 0 && this.NameLength <= 20)
-                this.ChestName = br.ReadString();
-            else
-                this.NameLength = 0;
+            this.ItemSlot = br.ReadByte();
+            this.Stack = br.ReadInt16();
+            this.Prefix = br.ReadByte();
+            this.ItemNetID = br.ReadInt16();
         }
 
         public override string ToString()
         {
-            return $"[SetChestName: ChestID = {ChestID} ChestX = {ChestX} ChestY = {ChestY} NameLength = {NameLength} ChestName = {ChestName}]";
+            return $"[UpdateChestItem: ChestID = {ChestID} ItemSlot = {ItemSlot} Stack = {Stack} Prefix = {Prefix} ItemNetID = {ItemNetID}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(8 + ChestName?.Length);
+            return (short)(8);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -84,12 +76,10 @@ namespace Multiplicity.Packets
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
                 br.Write(ChestID);
-                br.Write(ChestX);
-                br.Write(ChestY);
-                NameLength = (byte)ChestName?.Length;
-                br.Write(NameLength);
-                if (ChestName != null)
-                    br.Write(ChestName);
+                br.Write(ItemSlot);
+                br.Write(Stack);
+                br.Write(Prefix);
+                br.Write(ItemNetID);
             }
         }
 

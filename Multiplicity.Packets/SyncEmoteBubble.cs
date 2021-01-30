@@ -17,12 +17,12 @@ namespace Multiplicity.Packets
         /// <summary>
         /// Gets or sets the MetaData - Only if AnchorType != 255|
         /// </summary>
-        public ushort MetaData { get; set; }
+        public ushort PlayerID { get; set; }
 
         /// <summary>
         /// Gets or sets the Lifetime - Only if AnchorType != 255|
         /// </summary>
-        public byte Lifetime { get; set; }
+        public ushort Lifetime { get; set; }
 
         /// <summary>
         /// Gets or sets the Emote - Only if AnchorType != 255|
@@ -54,8 +54,8 @@ namespace Multiplicity.Packets
             this.AnchorType = br.ReadByte();
             if (this.AnchorType != 255)
             {
-                this.MetaData = br.ReadUInt16();
-                this.Lifetime = br.ReadByte();
+                this.PlayerID = br.ReadUInt16();
+                this.Lifetime = br.ReadUInt16();
                 this.Emote = br.ReadByte();
                 if (this.Emote < 0)
                     this.EmoteMetaData = br.ReadInt16();
@@ -65,7 +65,7 @@ namespace Multiplicity.Packets
 
         public override string ToString()
         {
-            return $"[SyncEmoteBubble: EmoteID = {EmoteID} AnchorType = {AnchorType} MetaData = {MetaData} Lifetime = {Lifetime} Emote = {Emote} EmoteMetaData = {EmoteMetaData}]";
+            return $"[SyncEmoteBubble: EmoteID = {EmoteID} AnchorType = {AnchorType} PlayerID = {PlayerID} Lifetime = {Lifetime} Emote = {Emote} EmoteMetaData = {EmoteMetaData}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -76,7 +76,7 @@ namespace Multiplicity.Packets
 
             if (this.AnchorType != 255)
             {
-                length += 4;
+                length += 5;
                 if (this.Emote < 0)
                     length += 2;
             }
@@ -107,7 +107,7 @@ namespace Multiplicity.Packets
                 br.Write(AnchorType);
                 if (this.AnchorType != 255)
                 {
-                    br.Write(MetaData);
+                    br.Write(PlayerID);
                     br.Write(Lifetime);
                     br.Write(Emote);
                     if (this.Emote < 0)

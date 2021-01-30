@@ -1,46 +1,53 @@
-using System;
+﻿using System;
 using System.IO;
-using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The ContinueConnecting (0x3) packet.
+    /// The SyncTilePicking (0x7D) packet.
     /// </summary>
-    public class ContinueConnecting : TerrariaPacket
+    public class SyncTilePicking : TerrariaPacket
     {
 
         public byte PlayerID { get; set; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContinueConnecting"/> class.
-        /// </summary>
-        public ContinueConnecting()
-            : base((byte)PacketTypes.ContinueConnecting)
-        {
+        public short X { get; set; }
 
+        public short Y { get; set; }
+
+        public byte PickDamage { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyncTilePicking"/> class.
+        /// </summary>
+        public SyncTilePicking()
+            : base((byte)PacketTypes.SyncTilePicking)
+        {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContinueConnecting"/> class.
+        /// Initializes a new instance of the <see cref="SyncTilePicking"/> class.
         /// </summary>
         /// <param name="br">br</param>
-        public ContinueConnecting(BinaryReader br)
+        public SyncTilePicking(BinaryReader br)
             : base(br)
         {
             this.PlayerID = br.ReadByte();
+            this.X = br.ReadInt16();
+            this.Y = br.ReadInt16();
+            this.PickDamage = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[ContinueConnecting: PlayerID = {PlayerID}]";
+            return $"[SyncTilePicking: PlayerID = {PlayerID}, X = {X}, Y = {Y}, PickDamage = {PickDamage}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(1);
+            return (short)(6);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -64,6 +71,9 @@ namespace Multiplicity.Packets
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
                 br.Write(PlayerID);
+                br.Write(X);
+                br.Write(Y);
+                br.Write(PickDamage);
             }
         }
 

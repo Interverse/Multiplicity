@@ -24,5 +24,22 @@ namespace Multiplicity.Packets.Extensions
         {
             return (b & (1 << bit)) != 0;
         }
+
+        public static byte SetFlag(this byte b, int flag, bool value)
+        {
+            if (value)
+            {
+                return b = (byte)(b | flag);
+            }
+            else
+            {
+                return b = (byte)(b & ~flag);
+            }
+        }
+
+        public static bool ReadFlag(this byte b, int flag)
+        {
+            return (b & flag) == flag;
+        }
     }
 }

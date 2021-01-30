@@ -7,6 +7,7 @@ namespace Multiplicity.Packets
     /// <summary>
     /// The UpdateItemDrop (0x15) packet.
     /// </summary>
+    [Obsolete("See Update Item Drop 2 [90]")]
     public class UpdateItemDrop : TerrariaPacket
     {
 

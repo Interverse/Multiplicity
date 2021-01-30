@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Multiplicity.Packets.Extensions;
+using Multiplicity.Packets.BitFlags;
 
 namespace Multiplicity.Packets
 {
@@ -11,7 +12,7 @@ namespace Multiplicity.Packets
     {
 
         /// <summary>
-        /// Gets or sets the Flags - BitFlags: 0 = Player Teleport (Neither 1 or 2), 1 = NPC Teleport, 2 = Player Teleport to Other Player, 4 = Style += 1, 8 = Style += 2|
+        /// Gets or sets the Flags - See <see cref="PlayerNPCTeleportFlags"/> for flag list|
         /// </summary>
         public byte Flags { get; set; }
 
@@ -20,6 +21,13 @@ namespace Multiplicity.Packets
         public float X { get; set; }
 
         public float Y { get; set; }
+
+        public byte Style { get; set; }
+
+        /// <summary>
+        /// Only sent if HasExtraInfo flag is true
+        /// </summary>
+        public int ExtraInfo { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerNPCTeleport"/> class.
@@ -41,18 +49,24 @@ namespace Multiplicity.Packets
             this.TargetID = br.ReadInt16();
             this.X = br.ReadSingle();
             this.Y = br.ReadSingle();
+            this.Style = br.ReadByte();
+            if (this.Flags.ReadFlag(PlayerNPCTeleportFlags.HasExtraInfo))
+                this.ExtraInfo = br.ReadInt32();
         }
 
         public override string ToString()
         {
-            return $"[PlayerNPCTeleport: Flags = {Flags} TargetID = {TargetID} X = {X} Y = {Y}]";
+            return $"[PlayerNPCTeleport: Flags = {Flags} TargetID = {TargetID} X = {X} Y = {Y} Style = {Style} ExtraInfo = {ExtraInfo}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(11);
+            short length = 12;
+            if (this.Flags.ReadFlag(PlayerNPCTeleportFlags.HasExtraInfo))
+                length += 4;
+            return length;
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -79,6 +93,8 @@ namespace Multiplicity.Packets
                 br.Write(TargetID);
                 br.Write(X);
                 br.Write(Y);
+                br.Write(Style);
+                br.Write(ExtraInfo);
             }
         }
 

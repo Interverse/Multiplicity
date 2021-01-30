@@ -14,6 +14,8 @@ namespace Multiplicity.Packets
 
         public int AnglerQuestsCompleted { get; set; }
 
+        public int GolferScore { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NumberOfAnglerQuestsCompleted"/> class.
         /// </summary>
@@ -32,18 +34,19 @@ namespace Multiplicity.Packets
         {
             this.PlayerID = br.ReadByte();
             this.AnglerQuestsCompleted = br.ReadInt32();
+            this.GolferScore = br.ReadInt32();
         }
 
         public override string ToString()
         {
-            return $"[NumberOfAnglerQuestsCompleted: PlayerID = {PlayerID} AnglerQuestsCompleted = {AnglerQuestsCompleted}]";
+            return $"[NumberOfAnglerQuestsCompleted: PlayerID = {PlayerID} AnglerQuestsCompleted = {AnglerQuestsCompleted} GolferScore = {GolferScore}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(5);
+            return (short)(9);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -68,6 +71,7 @@ namespace Multiplicity.Packets
             {
                 br.Write(PlayerID);
                 br.Write(AnglerQuestsCompleted);
+                br.Write(GolferScore);
             }
         }
 

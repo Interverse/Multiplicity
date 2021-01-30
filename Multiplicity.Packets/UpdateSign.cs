@@ -21,6 +21,11 @@ namespace Multiplicity.Packets
         public byte PlayerID { get; set; }
 
         /// <summary>
+        /// Holds Sign Flags - 1 = TBD|
+        /// </summary>
+        public byte SignFlags { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="UpdateSign"/> class.
         /// </summary>
         public UpdateSign()
@@ -41,18 +46,19 @@ namespace Multiplicity.Packets
             this.Y = br.ReadInt16();
             this.Text = br.ReadString();
             this.PlayerID = br.ReadByte();
+            this.SignFlags = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[UpdateSign: SignID = {SignID} X = {X} Y = {Y} Text = {Text} PlayerID = {PlayerID}]";
+            return $"[UpdateSign: SignID = {SignID} X = {X} Y = {Y} Text = {Text} PlayerID = {PlayerID} SignFlags={SignFlags}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(8 + Text.Length);
+            return (short)(9 + Text.Length);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -80,6 +86,7 @@ namespace Multiplicity.Packets
                 br.Write(Y);
                 br.Write(Text);
                 br.Write(PlayerID);
+                br.Write(SignFlags);
             }
         }
 

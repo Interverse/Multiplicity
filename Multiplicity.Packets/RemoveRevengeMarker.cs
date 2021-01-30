@@ -1,55 +1,44 @@
-using System;
+﻿using System;
 using System.IO;
-using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The GetSection (0x8) packet.
+    /// The RemoveRevengeMarker (0x7F) packet.
     /// </summary>
-    public class GetSection : TerrariaPacket
+    public class RemoveRevengeMarker : TerrariaPacket
     {
 
-        /// <summary>
-        /// Gets or sets the X - If -1 Send spawn area tile sections|
-        /// </summary>
-        public int X { get; set; }
+        public int UniqueID { get; set; }
 
         /// <summary>
-        /// Gets or sets the Y - If -1 Send spawn area tile sections|
+        /// Initializes a new instance of the <see cref="RemoveRevengeMarker"/> class.
         /// </summary>
-        public int Y { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GetSection"/> class.
-        /// </summary>
-        public GetSection()
-            : base((byte)PacketTypes.GetSection)
+        public RemoveRevengeMarker()
+            : base((byte)PacketTypes.RemoveRevengeMarker)
         {
-
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetSection"/> class.
+        /// Initializes a new instance of the <see cref="RemoveRevengeMarker"/> class.
         /// </summary>
         /// <param name="br">br</param>
-        public GetSection(BinaryReader br)
+        public RemoveRevengeMarker(BinaryReader br)
             : base(br)
         {
-            this.X = br.ReadInt32();
-            this.Y = br.ReadInt32();
+            this.UniqueID = br.ReadInt32();
         }
 
         public override string ToString()
         {
-            return $"[GetSection: X = {X} Y = {Y}]";
+            return $"[RemoveRevengeMarker: UniqueID = {UniqueID}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(8);
+            return (short)(4);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -72,8 +61,7 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
-                br.Write(X);
-                br.Write(Y);
+                br.Write(UniqueID);
             }
         }
 

@@ -10,49 +10,18 @@ namespace Multiplicity.Packets
     public class UpdateTileEntity : TerrariaPacket
     {
 
-        public int Key { get; set; }
-
-        public bool IsRemove { get; set; }
+        public int TileEntityId { get; set; }
 
         /// <summary>
-        /// Gets or sets the TileEntityType - If Remove? == false|
+        /// If UpdateTileFlag is false, TileEntity is removed
         /// </summary>
+        public bool UpdateTileFlag { get; set; }
+
         public byte TileEntityType { get; set; }
 
-        /// <summary>
-        /// Gets or sets the ID - If Remove? == false|
-        /// </summary>
-        public int TileID { get; set; }
-
-        /// <summary>
-        /// Gets or sets the X - If Remove? == false|
-        /// </summary>
         public short X { get; set; }
 
-        /// <summary>
-        /// Gets or sets the Y - If Remove? == false|
-        /// </summary>
         public short Y { get; set; }
-
-        /// <summary>
-        /// Gets or sets the NPC - If Remove? == false && Type = 0|
-        /// </summary>
-        public short NPC { get; set; }
-
-        /// <summary>
-        /// Gets or sets the ItemType - If Remove? == false|
-        /// </summary>
-        public short ItemType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Prefix - If Remove? == false|
-        /// </summary>
-        public byte Prefix { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Stack - If Remove? == false|
-        /// </summary>
-        public short Stack { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateTileEntity"/> class.
@@ -70,26 +39,19 @@ namespace Multiplicity.Packets
         public UpdateTileEntity(BinaryReader br)
             : base(br)
         {
-            this.Key = br.ReadInt32();
-            this.IsRemove = br.ReadBoolean();
+            this.TileEntityId = br.ReadInt32();
 
-            if (!this.IsRemove)
+            if (!this.UpdateTileFlag)
             {
                 this.TileEntityType = br.ReadByte();
-                this.TileID = br.ReadInt32();
                 this.X = br.ReadInt16();
                 this.Y = br.ReadInt16();
-                if (this.TileEntityType == 0)
-                    this.NPC = br.ReadInt16();
-                this.ItemType = br.ReadInt16();
-                this.Prefix = br.ReadByte();
-                this.Stack = br.ReadInt16();
             }
         }
 
         public override string ToString()
         {
-            return $"[UpdateTileEntity: Key = {Key} IsRemove = {IsRemove} TileEntityType = {TileEntityType} TileID = {TileID} X = {X} Y = {Y} NPC = {NPC} ItemType = {ItemType} Prefix = {Prefix} Stack = {Stack}]";
+            return $"[UpdateTileEntity: TileEntityId = {TileEntityId} UpdateTileFlag = {UpdateTileFlag} TileEntityType = {TileEntityType} X = {X} Y = {Y}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -97,11 +59,9 @@ namespace Multiplicity.Packets
         public override short GetLength()
         {
             short length = 5;
-            if (!IsRemove)
+            if (!UpdateTileFlag)
             {
-                length += 14;
-                if (TileEntityType == 0)
-                    length += 2;
+                length += 5;
             }
             return (short)(length);
         }
@@ -126,20 +86,14 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
-                br.Write(Key);
-                br.Write(IsRemove);
+                br.Write(TileEntityId);
+                br.Write(UpdateTileFlag);
 
-                if (!this.IsRemove)
+                if (!this.UpdateTileFlag)
                 {
                     br.Write(TileEntityType);
-                    br.Write(TileID);
                     br.Write(X);
                     br.Write(Y);
-                    if (this.TileEntityType == 0)
-                        br.Write(NPC);
-                    br.Write(ItemType);
-                    br.Write(Prefix);
-                    br.Write(Stack);
                 }
             }
         }

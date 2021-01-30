@@ -12,7 +12,7 @@ namespace Multiplicity.Packets
 
         public short NPCID { get; set; }
 
-        public byte Who { get; set; }
+        public byte PlayerID { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CatchNPC"/> class.
@@ -31,12 +31,12 @@ namespace Multiplicity.Packets
             : base(br)
         {
             this.NPCID = br.ReadInt16();
-            this.Who = br.ReadByte();
+            this.PlayerID = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[CatchNPC: NPCID = {NPCID} Who = {Who}]";
+            return $"[CatchNPC: NPCID = {NPCID} PlayerID = {PlayerID}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -67,7 +67,7 @@ namespace Multiplicity.Packets
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
                 br.Write(NPCID);
-                br.Write(Who);
+                br.Write(PlayerID);
             }
         }
 

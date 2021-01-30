@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using System.IO;
 using Multiplicity.Packets.Extensions;
@@ -5,8 +6,9 @@ using Multiplicity.Packets.Extensions;
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The ChatMessage (0x19) packet.
+    /// Legacy ChatMessage (0x19) packet.
     /// </summary>
+    [Obsolete("Is now never sent")]
     public class ChatMessage : TerrariaPacket
     {
 

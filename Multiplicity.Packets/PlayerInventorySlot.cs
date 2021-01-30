@@ -13,9 +13,11 @@ namespace Multiplicity.Packets
         public byte PlayerID { get; set; }
 
         /// <summary>
-        /// Gets or sets the SlotID - 0 - 58 = Inventory, 59 - 78 = Armor, 79 - 88 = Dye, 89 - 93 MiscEquips, 94 - 98 = MiscDyes, 99 - 138 = Piggy bank, 139-178 = Safe, 179 = Trash|
+        /// Gets or sets the SlotID
+        /// 0 - 58 = Inventory, 59 - 78 = Armor, 79 - 88 = Dye, 89 - 93 MiscEquips, 94 - 98 = MiscDyes, 
+        /// 99 - 138 = Piggy bank, 139 - 178 = Safe, 179 = Trash, 180 - 219 = Defender's Forge, 220 - 259 = Void Vault
         /// </summary>
-        public byte SlotID { get; set; }
+        public short SlotID { get; set; }
 
         public short Stack { get; set; }
 
@@ -40,7 +42,7 @@ namespace Multiplicity.Packets
             : base(br)
         {
             this.PlayerID = br.ReadByte();
-            this.SlotID = br.ReadByte();
+            this.SlotID = br.ReadInt16();
             this.Stack = br.ReadInt16();
             this.Prefix = br.ReadByte();
             this.ItemNetID = br.ReadInt16();
@@ -55,7 +57,7 @@ namespace Multiplicity.Packets
 
         public override short GetLength()
         {
-            return (short)(7);
+            return (short)(8);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)

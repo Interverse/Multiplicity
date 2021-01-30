@@ -10,7 +10,8 @@ namespace Multiplicity.Packets
     public class KillPortal : TerrariaPacket
     {
 
-        public ushort ProjectileIndex { get; set; }
+        public ushort ProjectileOwner { get; set; }
+        public byte ProjectileAI { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KillPortal"/> class.
@@ -28,12 +29,13 @@ namespace Multiplicity.Packets
         public KillPortal(BinaryReader br)
             : base(br)
         {
-            this.ProjectileIndex = br.ReadUInt16();
+            this.ProjectileOwner = br.ReadUInt16();
+            this.ProjectileAI = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[KillPortal: ProjectileIndex = {ProjectileIndex}]";
+            return $"[KillPortal: ProjectileOwner = {ProjectileOwner} ProjectileAI = {ProjectileAI}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -63,7 +65,8 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
-                br.Write(ProjectileIndex);
+                br.Write(ProjectileOwner);
+                br.Write(ProjectileAI);
             }
         }
 

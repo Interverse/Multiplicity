@@ -9,6 +9,10 @@ namespace Multiplicity.Packets
     /// </summary>
     public class TeleportationPotion : TerrariaPacket
     {
+        /// <summary>
+        /// Gets or Sets the type - 0 = Teleportation Potion, 1 = Magic Conch, 2 = Demon Conch|
+        /// </summary>
+        public byte Type { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeleportationPotion"/> class.
@@ -26,18 +30,19 @@ namespace Multiplicity.Packets
         public TeleportationPotion(BinaryReader br)
             : base(br)
         {
+            this.Type = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[TeleportationPotion:]";
+            return $"[TeleportationPotion: Type = {Type}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(0);
+            return (short)(1);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -60,6 +65,7 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
+                br.Write(Type);
             }
         }
 

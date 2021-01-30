@@ -1,43 +1,56 @@
-using System;
+﻿using System;
 using System.IO;
-using Multiplicity.Packets.Extensions;
 
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The ContinueConnecting2 (0x6) packet.
+    /// The FoodPlatterTryPlacing (0x85) packet.
     /// </summary>
-    public class ContinueConnecting2 : TerrariaPacket
+    public class FoodPlatterTryPlacing : TerrariaPacket
     {
+        public short X { get; set; }
+
+        public short Y { get; set; }
+
+        public short ItemID { get; set; }
+
+        public byte Prefix { get; set; }
+
+        public short Stack { get; set; }
+
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContinueConnecting2"/> class.
+        /// Initializes a new instance of the <see cref="FoodPlatterTryPlacing"/> class.
         /// </summary>
-        public ContinueConnecting2()
-            : base((byte)PacketTypes.ContinueConnecting2)
+        public FoodPlatterTryPlacing()
+            : base((byte)PacketTypes.FoodPlatterTryPlacing)
         {
-
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContinueConnecting2"/> class.
+        /// Initializes a new instance of the <see cref="FoodPlatterTryPlacing"/> class.
         /// </summary>
         /// <param name="br">br</param>
-        public ContinueConnecting2(BinaryReader br)
+        public FoodPlatterTryPlacing(BinaryReader br)
             : base(br)
         {
+            this.X = br.ReadInt16();
+            this.Y = br.ReadInt16();
+            this.ItemID = br.ReadInt16();
+            this.Prefix = br.ReadByte();
+            this.Stack = br.ReadInt16();
         }
 
         public override string ToString()
         {
-            return $"[ContinueConnecting2:]";
+            return $"[FoodPlatterTryPlacing: X = {X}, Y = {Y}, ItemID = {ItemID}, Prefix = {Prefix}, Stack = {Stack}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(0);
+            return (short)(9);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -60,6 +73,11 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
+                br.Write(X);
+                br.Write(Y);
+                br.Write(ItemID);
+                br.Write(Prefix);
+                br.Write(Stack);
             }
         }
 

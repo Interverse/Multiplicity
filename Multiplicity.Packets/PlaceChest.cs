@@ -11,9 +11,9 @@ namespace Multiplicity.Packets
     {
 
         /// <summary>
-        /// Gets or sets the ChestID - BitFlags:0 = Place Chest, 1 = Kill Chest, 2 = Place Dresser, 3 = Kill Dresser. 4 = Place Containers2, 5 = Kill Containers2|
+        /// Gets or sets the Chest - BitFlags:0 = Place Chest, 1 = Kill Chest, 2 = Place Dresser, 3 = Kill Dresser. 4 = Place Containers2, 5 = Kill Containers2|
         /// </summary>
-        public byte ChestID { get; set; }
+        public byte Action { get; set; }
 
         public short TileX { get; set; }
 
@@ -45,7 +45,7 @@ namespace Multiplicity.Packets
         public PlaceChest(BinaryReader br)
             : base(br)
         {
-            this.ChestID = br.ReadByte();
+            this.Action = br.ReadByte();
             this.TileX = br.ReadInt16();
             this.TileY = br.ReadInt16();
             this.Style = br.ReadInt16();
@@ -54,7 +54,7 @@ namespace Multiplicity.Packets
 
         public override string ToString()
         {
-            return $"[PlaceChest: ChestID = {ChestID} TileX = {TileX} TileY = {TileY} Style = {Style} ChestIDtodestroy = {ChestIDtodestroy}]";
+            return $"[PlaceChest: Action = {Action} TileX = {TileX} TileY = {TileY} Style = {Style} ChestIDtodestroy = {ChestIDtodestroy}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -84,7 +84,7 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
-                br.Write(ChestID);
+                br.Write(Action);
                 br.Write(TileX);
                 br.Write(TileY);
                 br.Write(Style);

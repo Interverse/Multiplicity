@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Multiplicity.Packets.Extensions;
+using Multiplicity.Packets.BitFlags;
 
 namespace Multiplicity.Packets
 {
@@ -13,22 +14,22 @@ namespace Multiplicity.Packets
         public byte PlayerID { get; set; }
 
         /// <summary>
-        /// Gets or sets the Zone1 - 1 = Dungeon, 2 = Corruption, 4 =Holy, 8 = Meteor, 16 = Jungle, 32 = Snow, 64 = Crimson, 128 = Water Candle|
+        /// Gets or sets the Zone1 - See <see cref="Zone1Flags"/> for flag list|
         /// </summary>
         public byte Zone1 { get; set; }
 
         /// <summary>
-        /// Gets or sets the Zone2 - 1 = Peace Candle, 2 = Solar Tower, 4 = Vortex Tower, 8 = Nebula Tower, 16 = Stardust Tower, 32 = Desert, 64 = Glowshroom, 128 = Underground Desert|
+        /// Gets or sets the Zone2 - See <see cref="Zone2Flags"/> for flag list|
         /// </summary>
         public byte Zone2 { get; set; }
 
         /// <summary>
-        /// Gets or sets the Zone3 - 1 = Overworld, 2 = Dirt Layer, 4 = Rock Layer, 8 = Underworld, 16 = Beach, 32 = Rain, 64 = Sandstorm|
+        /// Gets or sets the Zone3 - See <see cref="Zone3Flags"/> for flag list|
         /// </summary>
         public byte Zone3 { get; set; }
 
         /// <summary>
-        /// Gets or sets the Zone4 - 1 = Old One's Army|
+        /// Gets or sets the Zone4 - See <see cref="Zone4Flags"/> for flag list|
         /// </summary>
         public byte Zone4 { get; set; }
 

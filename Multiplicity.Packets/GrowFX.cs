@@ -9,15 +9,23 @@ namespace Multiplicity.Packets
     /// </summary>
     public class GrowFX : TerrariaPacket
     {
+        /// <summary>
+        /// 1 = Tree Growth Effects, 2 = Fairy Effects
+        /// </summary>
+        public byte EffectFlags { get; set; }
 
-        public bool GrowEffect { get; set; }
+        public int X { get; set; }
 
-        public short X { get; set; }
+        public int Y { get; set; }
 
-        public short Y { get; set; }
-
+        /// <summary>
+        /// if EffectFlag is TreeGrowth, data is Height; if EffectFlag is Fairy Effects, data is effect Type
+        /// </summary>
         public byte Height { get; set; }
 
+        /// <summary>
+        /// Always 0 unless it is TreeGrowth
+        /// </summary>
         public short TreeGore { get; set; }
 
         /// <summary>
@@ -36,23 +44,23 @@ namespace Multiplicity.Packets
         public GrowFX(BinaryReader br)
             : base(br)
         {
-            this.GrowEffect = br.ReadBoolean();
-            this.X = br.ReadInt16();
-            this.Y = br.ReadInt16();
+            this.EffectFlags = br.ReadByte();
+            this.X = br.ReadInt32();
+            this.Y = br.ReadInt32();
             this.Height = br.ReadByte();
             this.TreeGore = br.ReadInt16();
         }
 
         public override string ToString()
         {
-            return $"[GrowFX: GrowEffect = {GrowEffect} X = {X} Y = {Y} Height = {Height} TreeGore = {TreeGore}]";
+            return $"[GrowFX: EffectFlags = {EffectFlags} X = {X} Y = {Y} Height = {Height} TreeGore = {TreeGore}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(8);
+            return (short)(12);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -75,7 +83,7 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
-                br.Write(GrowEffect);
+                br.Write(EffectFlags);
                 br.Write(X);
                 br.Write(Y);
                 br.Write(Height);

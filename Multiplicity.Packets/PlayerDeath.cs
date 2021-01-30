@@ -6,6 +6,7 @@ namespace Multiplicity.Packets
     /// <summary>
     /// The PlayerDeath (0x2C) packet.
     /// </summary>
+    [Obsolete("Is now never sent")]
     public class PlayerDeath : TerrariaPacket
     {
 

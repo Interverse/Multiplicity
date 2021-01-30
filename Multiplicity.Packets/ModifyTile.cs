@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Multiplicity.Packets.Extensions;
+using Multiplicity.Packets.BitFlags;
 
 namespace Multiplicity.Packets
 {
@@ -11,7 +12,7 @@ namespace Multiplicity.Packets
     {
 
         /// <summary>
-        /// Gets or sets the Action - Values: 0 = KillTile, 1 = PlaceTile, 2 = KillWall, 3 = PlaceWall, 4 = KillTileNoItem, 5 = PlaceWire, 6 = KillWire, 7 = PoundTile, 8 = PlaceActuator, 9 = KillActuator, 10 = PlaceWire2, 11 = KillWire2, 12 = PlaceWire3, 13 = KillWire3, 14 = SlopeTile, 15 = FrameTrack, 16 = PlaceWire4, 17 = KillWire4, 18 = PokeLogicGate, 19 = Actuate|
+        /// Gets or sets the Action - See <see cref="ModifyTileActionFlags"/> for byte list|
         /// </summary>
         public byte Action { get; set; }
 
@@ -20,14 +21,14 @@ namespace Multiplicity.Packets
         public short TileY { get; set; }
 
         /// <summary>
-        /// Gets or sets the Var1 - KillTile (Fail: Bool), PlaceTile (Type: Byte), KillWall (Fail: Bool), PlaceWall (Type: Byte), KillTileNoItem (Fail: Bool), SlopeTile (Slope: Byte)|
+        /// Gets or sets the Flags1 - KillTile (Fail: Bool), PlaceTile (Type: Byte), KillWall (Fail: Bool), PlaceWall (Type: Byte), KillTileNoItem (Fail: Bool), SlopeTile (Slope: Byte), ReplaceTile (Type: Int16), ReplaceWall (Type: Int16)|
         /// </summary>
-        public short Var1 { get; set; }
+        public short Flags1 { get; set; }
 
         /// <summary>
-        /// Gets or sets the Var2 - Var2: PlaceTile (Style: Byte)|
+        /// Gets or sets the Flags2 - PlaceTile (Style: Byte), ReplaceTile (Style: Byte)|
         /// </summary>
-        public byte Var2 { get; set; }
+        public byte Flags2 { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModifyTile"/> class.
@@ -48,13 +49,13 @@ namespace Multiplicity.Packets
             this.Action = br.ReadByte();
             this.TileX = br.ReadInt16();
             this.TileY = br.ReadInt16();
-            this.Var1 = br.ReadInt16();
-            this.Var2 = br.ReadByte();
+            this.Flags1 = br.ReadInt16();
+            this.Flags2 = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[ModifyTile: Action = {Action} TileX = {TileX} TileY = {TileY} Var1 = {Var1} Var2 = {Var2}]";
+            return $"[ModifyTile: Action = {Action} TileX = {TileX} TileY = {TileY} Flags1 = {Flags1} Flags2 = {Flags2}]";
         }
 
         #region implemented abstract members of TerrariaPacket
@@ -87,8 +88,8 @@ namespace Multiplicity.Packets
                 br.Write(Action);
                 br.Write(TileX);
                 br.Write(TileY);
-                br.Write(Var1);
-                br.Write(Var2);
+                br.Write(Flags1);
+                br.Write(Flags2);
             }
         }
 

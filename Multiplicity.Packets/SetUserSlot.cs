@@ -5,45 +5,42 @@ using Multiplicity.Packets.Extensions;
 namespace Multiplicity.Packets
 {
     /// <summary>
-    /// The GetChestContents (0x1F) packet.
+    /// The ContinueConnecting (0x3) packet.
     /// </summary>
-    public class GetChestContents : TerrariaPacket
+    public class SetUserSlot : TerrariaPacket
     {
 
-        public short TileX { get; set; }
-
-        public short TileY { get; set; }
+        public byte PlayerID { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetChestContents"/> class.
+        /// Initializes a new instance of the <see cref="SetUserSlot"/> class.
         /// </summary>
-        public GetChestContents()
-            : base((byte)PacketTypes.GetChestContents)
+        public SetUserSlot()
+            : base((byte)PacketTypes.SetUserSlot)
         {
 
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetChestContents"/> class.
+        /// Initializes a new instance of the <see cref="SetUserSlot"/> class.
         /// </summary>
         /// <param name="br">br</param>
-        public GetChestContents(BinaryReader br)
+        public SetUserSlot(BinaryReader br)
             : base(br)
         {
-            this.TileX = br.ReadInt16();
-            this.TileY = br.ReadInt16();
+            this.PlayerID = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[GetChestContents: TileX = {TileX} TileY = {TileY}]";
+            return $"[SetUserSlot: PlayerID = {PlayerID}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(4);
+            return (short)(1);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -66,8 +63,7 @@ namespace Multiplicity.Packets
              */
             using (BinaryWriter br = new BinaryWriter(stream, new System.Text.UTF8Encoding(), leaveOpen: true))
             {
-                br.Write(TileX);
-                br.Write(TileY);
+                br.Write(PlayerID);
             }
         }
 

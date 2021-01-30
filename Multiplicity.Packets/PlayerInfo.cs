@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Multiplicity.Packets.Extensions;
+using Multiplicity.Packets.BitFlags;
 using System.Drawing;
 
 namespace Multiplicity.Packets
@@ -44,7 +45,15 @@ namespace Multiplicity.Packets
 
         public ColorStruct ShoeColor { get; set; }
 
+        /// <summary>
+        /// Sets or Gets Difficulty - See <see cref="DifficultyFlags"/> for byte list
+        /// </summary>
         public byte Difficulty { get; set; }
+
+        /// <summary>
+        /// Sets or Gets Torch - See <see cref="TorchFlags"/> for byte list
+        /// </summary>
+        public byte Torch { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerInfo"/> class.
@@ -78,18 +87,19 @@ namespace Multiplicity.Packets
             this.PantsColor = br.ReadColor();
             this.ShoeColor = br.ReadColor();
             this.Difficulty = br.ReadByte();
+            this.Torch = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[PlayerInfo: PlayerID = {PlayerID} SkinVarient = {SkinVarient} Hair = {Hair} Name = {Name} HairDye = {HairDye} HideVisuals = {HideVisuals} HideVisuals2 = {HideVisuals2} HideMisc = {HideMisc} HairColor = {HairColor} SkinColor = {SkinColor} EyeColor = {EyeColor} ShirtColor = {ShirtColor} UnderShirtColor = {UnderShirtColor} PantsColor = {PantsColor} ShoeColor = {ShoeColor} Difficulty = {Difficulty}]";
+            return $"[PlayerInfo: PlayerID = {PlayerID} SkinVarient = {SkinVarient} Hair = {Hair} Name = {Name} HairDye = {HairDye} HideVisuals = {HideVisuals} HideVisuals2 = {HideVisuals2} HideMisc = {HideMisc} HairColor = {HairColor} SkinColor = {SkinColor} EyeColor = {EyeColor} ShirtColor = {ShirtColor} UnderShirtColor = {UnderShirtColor} PantsColor = {PantsColor} ShoeColor = {ShoeColor} Difficulty = {Difficulty} Torch = {Torch}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(30 + Name.Length);
+            return (short)(31 + Name.Length);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -128,6 +138,7 @@ namespace Multiplicity.Packets
                 br.Write(PantsColor);
                 br.Write(ShoeColor);
                 br.Write(Difficulty);
+                br.Write(Torch);
             }
         }
 

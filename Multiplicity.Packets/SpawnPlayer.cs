@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Multiplicity.Packets.Extensions;
+using Multiplicity.Packets.BitFlags;
 
 namespace Multiplicity.Packets
 {
@@ -15,6 +16,13 @@ namespace Multiplicity.Packets
         public short SpawnX { get; set; }
 
         public short SpawnY { get; set; }
+
+        public int RespawnTimeRemaining { get; set; }
+
+        /// <summary>
+        /// See <see cref="PlayerSpawnContextFlags"/> for byte list
+        /// </summary>
+        public byte PlayerSpawnContext { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpawnPlayer"/> class.
@@ -35,18 +43,20 @@ namespace Multiplicity.Packets
             this.PlayerID = br.ReadByte();
             this.SpawnX = br.ReadInt16();
             this.SpawnY = br.ReadInt16();
+            this.RespawnTimeRemaining = br.ReadInt32();
+            this.PlayerSpawnContext = br.ReadByte();
         }
 
         public override string ToString()
         {
-            return $"[SpawnPlayer: PlayerID = {PlayerID} SpawnX = {SpawnX} SpawnY = {SpawnY}]";
+            return $"[SpawnPlayer: PlayerID = {PlayerID} SpawnX = {SpawnX} SpawnY = {SpawnY} RespawnTimeRemaining = {RespawnTimeRemaining} PlayerSpawnContext = {PlayerSpawnContext}]";
         }
 
         #region implemented abstract members of TerrariaPacket
 
         public override short GetLength()
         {
-            return (short)(5);
+            return (short)(10);
         }
 
         public override void ToStream(Stream stream, bool includeHeader = true)
@@ -72,6 +82,8 @@ namespace Multiplicity.Packets
                 br.Write(PlayerID);
                 br.Write(SpawnX);
                 br.Write(SpawnY);
+                br.Write(RespawnTimeRemaining);
+                br.Write(PlayerSpawnContext);
             }
         }
 

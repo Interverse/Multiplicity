@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Multiplicity.Packets.Extensions;
+using Multiplicity.Packets.BitFlags;
 
 namespace Multiplicity.Packets
 {
@@ -13,14 +14,24 @@ namespace Multiplicity.Packets
         public byte PlayerID { get; set; }
 
         /// <summary>
-        /// Gets or sets the Control - BitFlags: ControlUp = 1, ControlDown = 2, ControlLeft = 4, ControlRight = 8, ControlJump = 16, ControlUseItem = 32, Direction = 64|
+        /// Gets or sets the Control - See <see cref="ControlFlags"/>|
         /// </summary>
         public byte Control { get; set; }
 
         /// <summary>
-        /// Gets or sets the Pulley - BitFlags: 0 = None, 1 = Direction, 2 = Direction, 4 = Update Velocity, 8 = Vortex Stealth Active, 16 = Gravity Direction, 32 = Shield Raised|
+        /// Gets or sets the Pulley - See <see cref="PulleyFlags"/>|
         /// </summary>
         public byte Pulley { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Misc - See <see cref="MiscFlags"/>|
+        /// </summary>
+        public byte Misc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SleepingInfo - See <see cref="SleepingInfoFlags"/>|
+        /// </summary>
+        public byte SleepingInfo { get; set; }
 
         public byte SelectedItem { get; set; }
 
@@ -37,6 +48,26 @@ namespace Multiplicity.Packets
         /// Gets or sets the VelocityY - Not sent if Update Velocity is not set|
         /// </summary>
         public float VelocityY { get; set; }
+
+        /// <summary>
+        /// Original Position X for Potion of Return, only sent if UsedPotionofReturn flag is true|
+        /// </summary>
+        public float OriginalPositionX { get; set; }
+
+        /// <summary>
+        /// Original Position Y for Potion of Return, only sent if UsedPotionofReturn flag is true|
+        /// </summary>
+        public float OriginalPositionY { get; set; }
+
+        /// <summary>
+        /// Home Position X for Potion of Return, only sent if UsedPotionofReturn flag is true|
+        /// </summary>
+        public float HomePositionX { get; set; }
+
+        /// <summary>
+        /// Home Position Y for Potion of Return, only sent if UsedPotionofReturn flag is true|
+        /// </summary>
+        public float HomePositionY { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdatePlayer"/> class.
@@ -61,10 +92,18 @@ namespace Multiplicity.Packets
             this.PositionX = br.ReadSingle();
             this.PositionY = br.ReadSingle();
 
-            if (this.Pulley.ReadBit(2))
+            if (this.Pulley.ReadFlag(PulleyFlags.UpdateVelocity))
             {
                 this.VelocityX = br.ReadSingle();
                 this.VelocityY = br.ReadSingle();
+            }
+
+            if (this.Misc.ReadFlag(MiscFlags.UsedPotionofReturn))
+            {
+                this.OriginalPositionX = br.ReadSingle();
+                this.OriginalPositionY = br.ReadSingle();
+                this.HomePositionX = br.ReadSingle();
+                this.HomePositionY = br.ReadSingle();
             }
         }
 
@@ -77,9 +116,11 @@ namespace Multiplicity.Packets
 
         public override short GetLength()
         {
-            byte length = 12;
-            if (Pulley.ReadBit(2))
+            byte length = 14;
+            if (Pulley.ReadFlag(PulleyFlags.UpdateVelocity))
                 length += 8;
+            if (Misc.ReadFlag(MiscFlags.UsedPotionofReturn))
+                length += 16;
             return (short)(length);
         }
 
@@ -110,10 +151,18 @@ namespace Multiplicity.Packets
                 br.Write(PositionX);
                 br.Write(PositionY);
 
-                if (this.Pulley.ReadBit(2))
+                if (this.Pulley.ReadFlag(PulleyFlags.UpdateVelocity))
                 {
                     br.Write(VelocityX);
                     br.Write(VelocityY);
+                }
+
+                if (this.Misc.ReadFlag(MiscFlags.UsedPotionofReturn))
+                {
+                    br.Write(OriginalPositionX);
+                    br.Write(OriginalPositionY);
+                    br.Write(HomePositionY);
+                    br.Write(HomePositionY);
                 }
             }
         }

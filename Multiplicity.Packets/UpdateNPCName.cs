@@ -39,11 +39,6 @@ namespace Multiplicity.Packets
             : base(br)
         {
             this.NPCID = br.ReadInt16();
-
-            if (br.BaseStream.Length > br.BaseStream.Position) {
-                this.Name = br.ReadString();
-            }
-            this.TownNpcVariationIndex = br.ReadInt32();
         }
 
         public override string ToString()
@@ -88,7 +83,10 @@ namespace Multiplicity.Packets
                 {
                     br.Write(Name);
                 }
-                br.Write(TownNpcVariationIndex);
+                if (!string.IsNullOrEmpty(Name))
+                {
+                    br.Write(TownNpcVariationIndex);
+                }
             }
         }
 

@@ -47,7 +47,7 @@ namespace Multiplicity.Packets
 
         public float Knockback { get; set; }
 
-        public float OriginalDamage { get; set; }
+        public short OriginalDamage { get; set; }
 
         /// <summary>
         /// Gets or sets the ProjUUID - Requires the Needs UUID flag to be set in order to be sent down the wire|

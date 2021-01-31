@@ -141,7 +141,7 @@ namespace Multiplicity.Packets
             if (PlayerDeathReason.ReadFlag(PlayerDeathReasonFlags.KilledViaPVP3))
                 _packetLength += 1;
             if (PlayerDeathReason.ReadFlag(PlayerDeathReasonFlags.KilledViaCustomModification))
-                _packetLength += 1 + FromCustomReason.Length;
+                _packetLength += FromCustomReason.Length;
             return (short)(7 + _packetLength);
         }
 
@@ -166,51 +166,43 @@ namespace Multiplicity.Packets
                 br.Write(PlayerID);
                 br.Write(PlayerDeathReason);
 
-                if (FromPlayerIndex != -1)
+                if (PlayerDeathReason.ReadFlag(PlayerDeathReasonFlags.KilledViaPVP))
                 {
-                    PlayerDeathReason = PlayerDeathReason.SetFlag(PlayerDeathReasonFlags.KilledViaPVP, true);
                     br.Write(FromPlayerIndex);
                 }
 
-                if (FromNpcIndex != -1)
+                if (PlayerDeathReason.ReadFlag(PlayerDeathReasonFlags.KilledViaNPC))
                 {
-                    PlayerDeathReason = PlayerDeathReason.SetFlag(PlayerDeathReasonFlags.KilledViaNPC, true);
                     br.Write(FromNpcIndex);
                 }
 
-                if (FromProjectileIndex != -1)
+                if (PlayerDeathReason.ReadFlag(PlayerDeathReasonFlags.KilledViaProjectile))
                 {
-                    PlayerDeathReason = PlayerDeathReason.SetFlag(PlayerDeathReasonFlags.KilledViaProjectile, true);
                     br.Write(FromProjectileIndex);
                 }
 
-                if (FromOther != 254)
+                if (PlayerDeathReason.ReadFlag(PlayerDeathReasonFlags.KilledViaOther))
                 {
-                    PlayerDeathReason = PlayerDeathReason.SetFlag(PlayerDeathReasonFlags.KilledViaOther, true);
                     br.Write(FromOther);
                 }
 
-                if (FromProjectileType != 0)
+                if (PlayerDeathReason.ReadFlag(PlayerDeathReasonFlags.KilledViaProjectile2))
                 {
-                    PlayerDeathReason = PlayerDeathReason.SetFlag(PlayerDeathReasonFlags.KilledViaProjectile2, true);
                     br.Write(FromProjectileType);
                 }
 
-                if (FromItemType != 0)
+                if (PlayerDeathReason.ReadFlag(PlayerDeathReasonFlags.KilledViaPVP2))
                 {
-                    PlayerDeathReason = PlayerDeathReason.SetFlag(PlayerDeathReasonFlags.KilledViaPVP2, true);
                     br.Write(FromItemType);
                 }
 
-                if (FromItemPrefix != 0)
+                if (PlayerDeathReason.ReadFlag(PlayerDeathReasonFlags.KilledViaPVP3))
                 {
-                    PlayerDeathReason = PlayerDeathReason.SetFlag(PlayerDeathReasonFlags.KilledViaPVP3, true);
                     br.Write(FromItemPrefix);
                 }
 
-                if (FromCustomReason != null)
+                if (PlayerDeathReason.ReadFlag(PlayerDeathReasonFlags.KilledViaCustomModification))
                 {
-                    PlayerDeathReason = PlayerDeathReason.SetFlag(PlayerDeathReasonFlags.KilledViaCustomModification, true);
                     br.Write(FromCustomReason);
                 }
 

@@ -25,7 +25,7 @@ namespace Multiplicity.Packets.Extensions
             return (b & (1 << bit)) != 0;
         }
 
-        public static byte SetFlag(this byte b, int flag, bool value)
+        public static byte SetFlag(this byte b, int flag, bool value = true)
         {
             if (value)
             {

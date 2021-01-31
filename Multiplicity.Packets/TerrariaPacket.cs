@@ -269,6 +269,13 @@ namespace Multiplicity.Packets
             using (MemoryStream ms = new MemoryStream())
             {
                 ToStream(ms);
+                using (BinaryWriter bw = new BinaryWriter(ms, System.Text.Encoding.UTF8, leaveOpen: true))
+                {
+                    short currentPosition = (short)bw.BaseStream.Position;
+                    bw.BaseStream.Position = 0L;
+                    bw.Write(currentPosition);
+                    bw.BaseStream.Position = currentPosition;
+                }
                 return ms.ToArray();
             }
         }

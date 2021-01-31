@@ -88,6 +88,8 @@ namespace Multiplicity.Packets
             this.PlayerID = br.ReadByte();
             this.Control = br.ReadByte();
             this.Pulley = br.ReadByte();
+            this.Misc = br.ReadByte();
+            this.SleepingInfo = br.ReadByte();
             this.SelectedItem = br.ReadByte();
             this.PositionX = br.ReadSingle();
             this.PositionY = br.ReadSingle();
@@ -109,7 +111,7 @@ namespace Multiplicity.Packets
 
         public override string ToString()
         {
-            return $"[UpdatePlayer: PlayerID = {PlayerID} Control = {Control} Pulley = {Pulley} SelectedItem = {SelectedItem} PositionX = {PositionX} PositionY = {PositionY} VelocityX = {VelocityX} VelocityY = {VelocityY}]";
+            return $"[UpdatePlayer: PlayerID = {PlayerID} Control = {Control} Pulley = {Pulley} Misc = {Misc} SleepingInfo = {SleepingInfo} SelectedItem = {SelectedItem} PositionX = {PositionX} PositionY = {PositionY} VelocityX = {VelocityX} VelocityY = {VelocityY}]";
         }
 
         #region implemented abstract members of TerrariaPacket

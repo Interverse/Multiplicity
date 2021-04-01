@@ -43,6 +43,11 @@ namespace Multiplicity.Packets
         /// </summary>
         public float AI1 { get; set; }
 
+        /// <summary>
+        /// Gets or sets the AI1 - Requires the AI1 flag to be set in order to be sent down the wire|
+        /// </summary>
+        public short BannerIdToRespondTo { get; set; }
+
         public short Damage { get; set; }
 
         public float Knockback { get; set; }
@@ -83,6 +88,8 @@ namespace Multiplicity.Packets
                 this.AI0 = br.ReadSingle();
             if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.AI1))
                 this.AI1 = br.ReadSingle();
+            if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.BannerIdToRespondTo))
+                this.BannerIdToRespondTo = br.ReadInt16();
             if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.Damage))
                 this.Damage = br.ReadInt16();
             if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.Knockback))
@@ -107,6 +114,8 @@ namespace Multiplicity.Packets
                 length += 4;
             if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.AI1))
                 length += 4;
+            if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.BannerIdToRespondTo))
+                length += 2;
             if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.Damage))
                 length += 2;
             if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.Knockback))
@@ -150,6 +159,8 @@ namespace Multiplicity.Packets
                     br.Write(AI0);
                 if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.AI1))
                     br.Write(AI1);
+                if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.BannerIdToRespondTo))
+                    br.Write(BannerIdToRespondTo);
                 if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.Damage))
                     br.Write(Damage);
                 if (this.ProjFlags.ReadFlag(ProjectileUpdateFlags.Knockback))
